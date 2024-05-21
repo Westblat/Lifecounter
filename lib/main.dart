@@ -42,29 +42,27 @@ class MyAppState extends ChangeNotifier {
     4: {"player": 4, "lifetotal": 40, "background": "monoblack", "lifeChange": 0},
   };
 
-  void func(int playerNumber, Map asd) {
+  void func(int playerNumber, Map emptyCommanderDamages) {
       var otherPlayers = getOtherPlayers(playerNumber);
       for (var other in otherPlayers.values) {
-        asd[playerNumber] = {
-          ...asd[playerNumber],
+        emptyCommanderDamages[playerNumber] = {
+          ...emptyCommanderDamages[playerNumber],
           other["player"]: 0
         };
       }
   }
   
   Map initializeCommanderDamage() {
-
-    Map asd = {};
+    Map emptyCommanderDamages = {};
     for (var number in players.keys ) {
-      asd[number]= {};
+      emptyCommanderDamages[number]= {};
     }
-    players.forEach((playerNumber, _) => func(playerNumber, asd));
-    return asd;
+    players.forEach((playerNumber, _) => func(playerNumber, emptyCommanderDamages));
+    return emptyCommanderDamages;
   }
-  
+
   late var commanderDamage = initializeCommanderDamage();
   var timer;
-  
   
   void changeLife(player, int life) {
     var oldValue = players[player] ?? {"player": "", "lifetotal": 0};
@@ -101,49 +99,49 @@ class MyAppState extends ChangeNotifier {
     });
   }
 
-void changeBackground(playerNumber, newBackground) {
+  void changeBackground(playerNumber, newBackground) {
     var oldValue = players[playerNumber] ?? {"player": "", "lifetotal": 0};
     players[playerNumber] = {...oldValue, "background": newBackground};
     notifyListeners();  
   }
 
-void restartGame() {
-  players.forEach((playerNumber, player) {
-      var oldValue = player;
-      players[playerNumber] = {...oldValue, "lifetotal": 40};
-  });
-  notifyListeners();
+  void restartGame() {
+    players.forEach((playerNumber, player) {
+        var oldValue = player;
+        players[playerNumber] = {...oldValue, "lifetotal": 40};
+    });
+    notifyListeners();
   }
 
-void dealCommanderDamage(int activePlayer, int targetPlayer, int damage) {
-  changeLife(targetPlayer, damage);
-  var oldCommanderDamage = commanderDamage[activePlayer] ?? {targetPlayer: 0};
-  if(oldCommanderDamage[targetPlayer] != null) {
-    commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: oldCommanderDamage[targetPlayer] + -damage};
+  void dealCommanderDamage(int activePlayer, int targetPlayer, int damage) {
+    changeLife(targetPlayer, damage);
+    var oldCommanderDamage = commanderDamage[activePlayer] ?? {targetPlayer: 0};
+    if(oldCommanderDamage[targetPlayer] != null) {
+      commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: oldCommanderDamage[targetPlayer] + -damage};
+    }
+    else {
+      commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: 1};
+    }
+    notifyListeners();
   }
-  else {
-    commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: 1};
+
+  Map getOtherPlayers(yourPlayerNumber) {
+    var newPlayerList = Map.from(players);
+    newPlayerList.removeWhere((player, _) => player == yourPlayerNumber);
+    return newPlayerList;
   }
-  notifyListeners();
-}
 
-Map getOtherPlayers(yourPlayerNumber) {
-  var newPlayerList = Map.from(players);
-  newPlayerList.removeWhere((player, _) => player == yourPlayerNumber);
-  return newPlayerList;
-}
+  void addPlayer() {
+    var newPlayerCount = players.length + 1;
+    players[newPlayerCount] = {"player": newPlayerCount, "lifetotal": 40, "background": "monogreen", "lifeChange": 0};
+    commanderDamage = initializeCommanderDamage();
+    notifyListeners();
+  }
 
-void addPlayer() {
-  var newPlayerCount = players.length + 1;
-  players[newPlayerCount] = {"player": newPlayerCount, "lifetotal": 40, "background": "monogreen", "lifeChange": 0};
-  commanderDamage = initializeCommanderDamage();
-  notifyListeners();
-}
-
-void removePlayer(){
-  players.remove(players.length);
-  notifyListeners();
-}
+  void removePlayer(){
+    players.remove(players.length);
+    notifyListeners();
+  }
 
 }
 

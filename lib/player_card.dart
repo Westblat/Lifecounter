@@ -25,12 +25,6 @@ class _PlayerCardState extends State<PlayerCard> {
   List selectedButtons = ["othersMinusOne"];
   late int thisPlayerNumber = widget.player["number"];
   
-
-
-  String getLife(player) {
-      return player["lifetotal"].toString();
-  }
-  
   void toggleSettings() {
     setState(() {
       settings = !settings;
@@ -43,7 +37,6 @@ class _PlayerCardState extends State<PlayerCard> {
       else {selectedButtons.add(button);}
     });
   }
-  
 
   @override
   Widget build(BuildContext context) {
@@ -84,44 +77,5 @@ class _PlayerCardState extends State<PlayerCard> {
           ),
       ),
     );
-  }
-}
-
-class CustomButtonRow extends StatelessWidget {
-  const CustomButtonRow({
-    super.key,
-    required this.widget,
-    required this.thisPlayerNumber,
-    required this.selectedButtons,
-  });
-
-  final List selectedButtons;
-  final PlayerCard widget;
-  final int thisPlayerNumber;
-
-
-  Widget getButton(String button){
-    return switch(button) {
-      "allMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllPlayers(-1);}, child: Text("-1 /  -1")),
-      "othersMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeNotOne(-1, thisPlayerNumber);}, child: Text("0 / -1")),
-      "othersMinusOnePlayerPlusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllOneDifferent(-1, thisPlayerNumber, 1);}, child: Text("+1 / -1")),
-      "poison" => ButtonWithState(image: AssetImage("lib/background_images/phyrexian.png")),
-      "experience" => ButtonWithState(image: AssetImage("lib/background_images/experience.png")),
-      _=> throw Exception("Unrecognized button"),
-    };
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        for (String button in selectedButtons)
-          getButton(button),
-        if(selectedButtons.isEmpty) SizedBox(height: 45,)
-      ],
-          
-      );
   }
 }

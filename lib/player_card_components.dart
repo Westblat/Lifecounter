@@ -92,7 +92,7 @@ class CommanderDamage extends StatelessWidget {
                           commanderDamage[thisPlayerNumber][player["player"].toString()], 
                           textAlign: TextAlign.center, 
                           style: TextStyle(fontWeight: FontWeight.bold),
-                          ),
+                        ),
                       )
                       : null
                     ),
@@ -104,6 +104,46 @@ class CommanderDamage extends StatelessWidget {
     );
   }
 }
+
+class CustomButtonRow extends StatelessWidget {
+  const CustomButtonRow({
+    super.key,
+    required this.widget,
+    required this.thisPlayerNumber,
+    required this.selectedButtons,
+  });
+
+  final List selectedButtons;
+  final PlayerCard widget;
+  final int thisPlayerNumber;
+
+
+  Widget getButton(String button){
+    return switch(button) {
+      "allMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllPlayers(-1);}, child: Text("-1 /  -1")),
+      "othersMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeNotOne(-1, thisPlayerNumber);}, child: Text("0 / -1")),
+      "othersMinusOnePlayerPlusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllOneDifferent(-1, thisPlayerNumber, 1);}, child: Text("+1 / -1")),
+      "poison" => ButtonWithState(image: AssetImage("lib/background_images/phyrexian.png")),
+      "experience" => ButtonWithState(image: AssetImage("lib/background_images/experience.png")),
+      _=> throw Exception("Unrecognized button"),
+    };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        for (String button in selectedButtons)
+          getButton(button),
+        if(selectedButtons.isEmpty) SizedBox(height: 45,)
+      ],
+          
+      );
+  }
+}
+
 
 class ButtonWithState extends StatefulWidget {
   const ButtonWithState({
@@ -121,7 +161,6 @@ class _ButtonWithStateState extends State<ButtonWithState> {
 
   @override
   Widget build(BuildContext context) {
-    
     return MaterialButton(
       onPressed: () => {setState(() {
         counter++;
@@ -146,7 +185,6 @@ class _ButtonWithStateState extends State<ButtonWithState> {
         )
         : null
       ),
-
-      );
+    );
   }
 }
