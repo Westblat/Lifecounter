@@ -40,7 +40,7 @@ class _PlayerCardState extends State<PlayerCard> {
 
   @override
   Widget build(BuildContext context) {
-    var otherPLayers = widget.appState.getOtherPlayers(thisPlayerNumber);
+    var otherPlayers = widget.appState.getOtherPlayers(thisPlayerNumber);
     var commanderDamage = widget.appState.commanderDamage;
     return DecoratedBox(
       decoration: 
@@ -64,7 +64,7 @@ class _PlayerCardState extends State<PlayerCard> {
                 playerNumber: thisPlayerNumber,
                 ) else Column(
                   children: [
-                    CommanderDamage(otherPLayers: otherPLayers, commanderDamage: commanderDamage, thisPlayerNumber: thisPlayerNumber, dealCommanderDamage: widget.appState.dealCommanderDamage,),
+                    CommanderDamageRow(otherPlayers: otherPlayers, commanderDamage: commanderDamage, thisPlayerNumber: thisPlayerNumber, dealCommanderDamage: widget.appState.dealCommanderDamage,),
                     LifeCounter(widget: widget, thisPlayerNumber: thisPlayerNumber,),
                     CustomButtonRow(widget: widget, thisPlayerNumber: thisPlayerNumber, selectedButtons: selectedButtons),
                   ],

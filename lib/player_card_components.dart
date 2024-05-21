@@ -52,20 +52,20 @@ class LifeCounter extends StatelessWidget {
   }
 }
 
-class CommanderDamage extends StatelessWidget {
-  const CommanderDamage({
+class CommanderDamageRow extends StatelessWidget {
+  const CommanderDamageRow({
     super.key,
-    required this.otherPLayers,
+    required this.otherPlayers,
     required this.commanderDamage,
     required this.thisPlayerNumber,
     required this.dealCommanderDamage,
   });
 
-  final Map otherPLayers;
+  final Map otherPlayers;
   final Map commanderDamage;
   final int thisPlayerNumber;
   final Function(int, int, int) dealCommanderDamage;
-
+  
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -74,11 +74,11 @@ class CommanderDamage extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              for (var player in otherPLayers.values)
+              for (var player in otherPlayers.values)
                 Expanded(
                   child: MaterialButton(
                     onPressed: () => {dealCommanderDamage(thisPlayerNumber, player["player"], -1)},
-                    onLongPress: () => {dealCommanderDamage(thisPlayerNumber, player["player"], -1)},
+                    onLongPress: () => {dealCommanderDamage(thisPlayerNumber, player["player"], 1)},
                     child: Container(
                       height: 30,
                       width: 30,
@@ -89,7 +89,7 @@ class CommanderDamage extends StatelessWidget {
                       commanderDamage[thisPlayerNumber][player["player"]] != 0 ? 
                       Center(
                         child: Text(
-                          commanderDamage[thisPlayerNumber][player["player"].toString()], 
+                          commanderDamage[thisPlayerNumber][player["player"]].toString(),
                           textAlign: TextAlign.center, 
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
