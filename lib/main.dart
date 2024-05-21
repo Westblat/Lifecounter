@@ -58,7 +58,7 @@ class MyAppState extends ChangeNotifier {
     for (var number in players.keys ) {
       asd[number]= {};
     }
-    players.forEach((playerNumber, _) => {func(playerNumber, asd)});
+    players.forEach((playerNumber, _) => func(playerNumber, asd));
     return asd;
   }
   
@@ -128,7 +128,7 @@ void dealCommanderDamage(int activePlayer, int targetPlayer, int damage) {
 }
 
 Map getOtherPlayers(yourPlayerNumber) {
-  var newPlayerList = new Map.from(players);
+  var newPlayerList = Map.from(players);
   newPlayerList.removeWhere((player, _) => player == yourPlayerNumber);
   return newPlayerList;
 }

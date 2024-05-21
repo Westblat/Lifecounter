@@ -10,10 +10,10 @@ class SettingsWidget extends StatefulWidget {
     required this.playerNumber,
     });
   
-  final setButtons;
-  final selectedButtons;
-  final changeBackground;
-  final playerNumber;
+  final Function setButtons;
+  final List selectedButtons;
+  final Function changeBackground;
+  final int playerNumber;
 
   @override
   State<SettingsWidget> createState() => _SettingsWidgetState();
@@ -65,9 +65,9 @@ class BackgroundWidget extends StatelessWidget {
     required this.playerNumber,
     });
   
-  final toggleBackgroundSelection;
-  final setBackground;
-  final playerNumber;
+  final Function toggleBackgroundSelection;
+  final Function setBackground;
+  final int playerNumber;
 
   @override
   Widget build (BuildContext context) {
