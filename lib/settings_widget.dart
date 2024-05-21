@@ -73,7 +73,7 @@ class BackgroundWidget extends StatelessWidget {
   Widget build (BuildContext context) {
   return Column(
     children: [
-      ElevatedButton(onPressed: toggleBackgroundSelection, child: Text("Close")),
+      ElevatedButton(onPressed: () => toggleBackgroundSelection, child: Text("Close")),
       Row(
         children: [
           for (String button in allBackgrounds)
