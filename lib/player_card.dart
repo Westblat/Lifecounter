@@ -75,14 +75,12 @@ class _PlayerCardState extends State<PlayerCard> {
             ),
           child: Stack(
             children: [
-              settings ? 
-              SettingsWidget(
+              if (settings) SettingsWidget(
                 selectedButtons: selectedButtons, 
                 setButtons: setButtons, 
                 changeBackground: widget.appState.changeBackground, 
                 playerNumber: thisPlayerNumber,
-                )
-              : Column(
+                ) else Column(
                   children: [
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -129,20 +127,25 @@ class _PlayerCardState extends State<PlayerCard> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
-                                  iconSize: 20,
-                                  onPressed: () {
-                                    widget.appState.changeLife(thisPlayerNumber, 1);
-                                  },
-                                  icon: Icon(Icons.add),
-                                  ),
+                                Expanded(
+                                  child: IconButton(
+                                    iconSize: 40,
+                                    onPressed: () {
+                                      widget.appState.changeLife(thisPlayerNumber, 1);
+                                    },
+                                    icon: Icon(Icons.add),
+                                    ),
+                                ),
                                 Text(getLife(widget.player), style: TextStyle(fontSize: 30)),
-                                IconButton(
-                                  onPressed: () {
-                                    widget.appState.changeLife(thisPlayerNumber, -1);
-                                  },
-                                  icon: Icon(Icons.remove),
-                                  ),
+                                Expanded(
+                                  child: IconButton(
+                                    iconSize: 50,
+                                    onPressed: () {
+                                      widget.appState.changeLife(thisPlayerNumber, -1);
+                                    },
+                                    icon: Icon(Icons.remove),
+                                    ),
+                                ),
                               ],
                             ),
                         ],
