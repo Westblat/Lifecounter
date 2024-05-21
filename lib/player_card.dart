@@ -1,6 +1,7 @@
 import 'package:first_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:first_app/utlis.dart';
+import 'package:flutter/widgets.dart';
 
 import 'settings_widget.dart';
 
@@ -23,6 +24,7 @@ class _PlayerCardState extends State<PlayerCard> {
   var settings = false;
   List selectedButtons = ["othersMinusOne"];
   late int thisPlayerNumber = widget.player["number"];
+  
 
 
   String getLife(player) {
@@ -39,7 +41,9 @@ class _PlayerCardState extends State<PlayerCard> {
     return switch(button) {
       "allMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllPlayers(-1);}, child: Text("-1 /  -1")),
       "othersMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeNotOne(-1, thisPlayerNumber);}, child: Text("0 / -1")),
-      "othersMinusOnePlayerPlusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllOneDifferent(-1, thisPlayerNumber, 1);}, child: Text("+1 / -")),
+      "othersMinusOnePlayerPlusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllOneDifferent(-1, thisPlayerNumber, 1);}, child: Text("+1 / -1")),
+      "poison" => ButtonWithState(image: AssetImage("lib/background_images/phyrexian.png")),
+      "experience" => ButtonWithState(image: AssetImage("lib/background_images/experience.png")),
       _=> throw Exception("Unrecognized button"),
     };
   }
@@ -54,6 +58,8 @@ class _PlayerCardState extends State<PlayerCard> {
 
   @override
   Widget build(BuildContext context) {
+    var otherPLayers = widget.appState.getOtherPlayers(thisPlayerNumber);
+    var commanderDamage = widget.appState.commanderDamage;
     return DecoratedBox(
       decoration: 
         BoxDecoration(
@@ -62,69 +68,151 @@ class _PlayerCardState extends State<PlayerCard> {
             image: AssetImage(getImage(widget.player?["background"]))
           )
       ),
-      child: settings 
-      ? SettingsWidget(
-        toggleSettings: toggleSettings, 
-        selectedButtons: selectedButtons, 
-        setButtons: setButtons, 
-        changeBackground: widget.appState.changeBackground, 
-        playerNumber: thisPlayerNumber,
-        ) 
-      :  Container(
-          padding: EdgeInsets.all(20),
-          child: Column(
+      child: Container(
+          padding: EdgeInsets.only(bottom: 20),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blueGrey)
+            ),
+          child: Stack(
             children: [
-                Align(
-                  alignment: Alignment.topRight,
-                  child: IconButton(icon: Icon(Icons.more_horiz), onPressed: toggleSettings,)
-                ),
-              Expanded(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+              settings ? 
+              SettingsWidget(
+                selectedButtons: selectedButtons, 
+                setButtons: setButtons, 
+                changeBackground: widget.appState.changeBackground, 
+                playerNumber: thisPlayerNumber,
+                )
+              : Column(
                   children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              for (var player in otherPLayers.values)
+                                Expanded(
+                                  child: MaterialButton(
+                                    onPressed: () => {widget.appState.dealCommanderDamage(thisPlayerNumber, player["player"], -1)},
+                                    onLongPress: () => {widget.appState.dealCommanderDamage(thisPlayerNumber, player["player"], -1)},
+                                    child: Container(
+                                      height: 30,
+                                      width: 30,
+                                      decoration: BoxDecoration(
+                                        image: DecorationImage(image: AssetImage(getImage(player["background"])), opacity: 0.3)
+                                      ),
+                                      child: 
+                                      commanderDamage[thisPlayerNumber][player["player"]] != 0 ? 
+                                      Center(
+                                        child: Text(
+                                          commanderDamage[thisPlayerNumber][player["player"]].toString(), 
+                                          textAlign: TextAlign.center, 
+                                          style: TextStyle(fontWeight: FontWeight.bold),
+                                          ),
+                                      )
+                                      : null
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          ),
+                      ],
+                    ),
                     Expanded(
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          widget.player["lifeChange"] != 0 ? Text("${widget.player["lifeChange"]}", style: TextStyle(fontSize: 20)) : SizedBox(height: 29,),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                iconSize: 20,
-                                onPressed: () {
-                                  widget.appState.changeLife(thisPlayerNumber, 1);
-                                },
-                                icon: Icon(Icons.add),
-                                ),
-                              Text(getLife(widget.player), style: TextStyle(fontSize: 30)),
-                              IconButton(
-                                onPressed: () {
-                                  widget.appState.changeLife(thisPlayerNumber, -1);
-                                },
-                                icon: Icon(Icons.remove),
-                                ),
-                            ],
-                          ),
+                          widget.player["lifeChange"] != 0 
+                            ? Text("${widget.player["lifeChange"]}", style: TextStyle(fontSize: 20)) 
+                            : SizedBox(height: 29,),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  iconSize: 20,
+                                  onPressed: () {
+                                    widget.appState.changeLife(thisPlayerNumber, 1);
+                                  },
+                                  icon: Icon(Icons.add),
+                                  ),
+                                Text(getLife(widget.player), style: TextStyle(fontSize: 30)),
+                                IconButton(
+                                  onPressed: () {
+                                    widget.appState.changeLife(thisPlayerNumber, -1);
+                                  },
+                                  icon: Icon(Icons.remove),
+                                  ),
+                              ],
+                            ),
                         ],
                       ),
                     ),
                     Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            for (String button in selectedButtons)
-                              getButton(button)
-                          ],
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        for (String button in selectedButtons)
+                          getButton(button),
+                        if(selectedButtons.isEmpty) SizedBox(height: 45,)
+                      ],
+                          
                       ),
-                      SizedBox(height: 30,)
                   ],
                 ),
-              ),
+                Align(
+                  alignment: Alignment.bottomLeft,
+                  child: IconButton(icon: Icon(Icons.more_vert), onPressed: toggleSettings,)
+                ),
             ],
           ),
       ),
     );
+  }
+}
+
+class ButtonWithState extends StatefulWidget {
+  const ButtonWithState({
+    super.key,
+    required this.image,
+  });
+  final AssetImage image;
+  
+  @override
+  State<ButtonWithState> createState() => _ButtonWithStateState();
+}
+
+class _ButtonWithStateState extends State<ButtonWithState> {
+  int counter = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    
+    return MaterialButton(
+      onPressed: () => {setState(() {
+        counter++;
+      })},
+      onLongPress: () => {setState(() {
+        counter -= 1;
+      })},
+        child: Container(
+        height: 30,
+        width: 30,
+        decoration: BoxDecoration(
+          image: DecorationImage(image: widget.image, opacity: 0.3)
+        ),
+        child: 
+        counter != 0 ? 
+        Center(
+          child: Text(
+            counter.toString(), 
+            textAlign: TextAlign.center, 
+            style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+        )
+        : null
+      ),
+
+      );
   }
 }

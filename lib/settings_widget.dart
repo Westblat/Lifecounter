@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 class SettingsWidget extends StatefulWidget {
   const SettingsWidget({
     super.key,
-    required this.toggleSettings,
     required this.setButtons,
     required this.selectedButtons,
     required this.changeBackground,
     required this.playerNumber,
     });
   
-  final toggleSettings;
   final setButtons;
   final selectedButtons;
   final changeBackground;
@@ -33,29 +31,28 @@ class _SettingsWidgetState extends State<SettingsWidget> {
 
   @override
   Widget build (BuildContext context) {
-    return showBackground 
-    ? BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, setBackground: widget.changeBackground, playerNumber: widget.playerNumber)
-    : Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      children: [
-        Align(
-            alignment: Alignment.topRight,
-            child: IconButton(icon: Icon(Icons.more_horiz), onPressed: widget.toggleSettings,)
-            ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            for(var button in allButtons)
-                  CheckboxListTile(title: Text(getButtonText(button)),value: widget.selectedButtons.contains(button), onChanged:  (_) => widget.setButtons(button))
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(onPressed: toggleBackgroundSelection, child: Text("Select background")),
-          ],
-        ),
-      ],
+    return Container(
+      padding: EdgeInsets.only(left: 35, top: 10),
+      child: 
+      showBackground 
+      ? BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, setBackground: widget.changeBackground, playerNumber: widget.playerNumber)
+      : ListView(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(onPressed: toggleBackgroundSelection, child: Text("Select background")),
+            ],
+          ),
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for(var button in allButtons)
+                CheckboxListTile(title: Text(getButtonText(button)),value: widget.selectedButtons.contains(button), onChanged:  (_) => widget.setButtons(button))
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

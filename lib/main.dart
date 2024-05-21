@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
  import 'package:provider/provider.dart';
+import 'package:flutter/services.dart';
 
 import 'package:first_app/player_card.dart'; 
 
@@ -14,6 +15,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ]);
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
@@ -31,12 +36,35 @@ class MyApp extends StatelessWidget {
 
 class MyAppState extends ChangeNotifier {
   var players = {
-    1: {"player": "pelaaja_1", "lifetotal": 40, "background": "monored", "lifeChange": 0},
-    2: {"player": "pelaaja_2", "lifetotal": 40, "background": "monogreen", "lifeChange": 0},
-    3: {"player": "pelaaja_3", "lifetotal": 40, "background": "monowhite", "lifeChange": 0},
-    4: {"player": "pelaaja_4", "lifetotal": 40, "background": "monoblack", "lifeChange": 0},
+    1: {"player": 1, "lifetotal": 40, "background": "monored", "lifeChange": 0},
+    2: {"player": 2, "lifetotal": 40, "background": "monogreen", "lifeChange": 0},
+    3: {"player": 3, "lifetotal": 40, "background": "monowhite", "lifeChange": 0},
+    4: {"player": 4, "lifetotal": 40, "background": "monoblack", "lifeChange": 0},
   };
+
+  void func(int playerNumber, Map asd) {
+      var otherPlayers = getOtherPlayers(playerNumber);
+      for (var other in otherPlayers.values) {
+        asd[playerNumber] = {
+          ...asd[playerNumber],
+          other["player"]: 0
+        };
+      }
+  }
+  
+  Map initializeCommanderDamage() {
+
+    Map asd = {};
+    for (var number in players.keys ) {
+      asd[number]= {};
+    }
+    players.forEach((playerNumber, _) => {func(playerNumber, asd)});
+    return asd;
+  }
+  
+  late var commanderDamage = initializeCommanderDamage();
   var timer;
+  
   
   void changeLife(player, int life) {
     var oldValue = players[player] ?? {"player": "", "lifetotal": 0};
@@ -87,9 +115,28 @@ void restartGame() {
   notifyListeners();
   }
 
+void dealCommanderDamage(int activePlayer, int targetPlayer, int damage) {
+  changeLife(targetPlayer, damage);
+  var oldCommanderDamage = commanderDamage[activePlayer] ?? {targetPlayer: 0};
+  if(oldCommanderDamage[targetPlayer] != null) {
+    commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: oldCommanderDamage[targetPlayer] + -damage};
+  }
+  else {
+    commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: 1};
+  }
+  notifyListeners();
+}
+
+Map getOtherPlayers(yourPlayerNumber) {
+  var newPlayerList = new Map.from(players);
+  newPlayerList.removeWhere((player, _) => player == yourPlayerNumber);
+  return newPlayerList;
+}
+
 void addPlayer() {
   var newPlayerCount = players.length + 1;
-  players[newPlayerCount] = {"player": "pelaaja_${newPlayerCount}", "lifetotal": 40, "background": "monogreen"};
+  players[newPlayerCount] = {"player": newPlayerCount, "lifetotal": 40, "background": "monogreen", "lifeChange": 0};
+  commanderDamage = initializeCommanderDamage();
   notifyListeners();
 }
 
@@ -109,7 +156,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var globalSettingsVisible = false;
-
+  
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
@@ -132,7 +179,6 @@ class _MyHomePageState extends State<MyHomePage> {
       });
     }
     
-
     return LayoutBuilder(
       builder: (context, constraints) {
         return Scaffold(
@@ -209,15 +255,15 @@ class GlobalSettings extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(onPressed: appState.restartGame, icon: Icon(Icons.restart_alt_rounded))
+            IconButton(onPressed: appState.restartGame, icon: Icon(Icons.restart_alt_rounded), iconSize: 50,)
             ],
           ),
           SizedBox(height: 50,),
           Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            IconButton(onPressed: appState.addPlayer, icon: Icon(Icons.add)),
-            IconButton(onPressed: appState.removePlayer, icon: Icon(Icons.remove))
+            IconButton(onPressed: appState.addPlayer, icon: Icon(Icons.add_circle_outline), iconSize: 50,),
+            IconButton(onPressed: appState.removePlayer, icon: Icon(Icons.remove_circle_outline), iconSize: 50,)
           ],
           ),
         ],

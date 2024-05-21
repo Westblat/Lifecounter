@@ -1,4 +1,4 @@
-List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne",];
+List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "poison", "experience"];
 List allBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue"];
 
 String getImage(String image){
@@ -17,6 +17,8 @@ String getButtonText(String button) {
     "allMinusOne" => "One damage to all players",
     "othersMinusOne" => "One damge to other players",
     "othersMinusOnePlayerPlusOne" => "One damage to other players, one life for you",
+    "poison" => "Poison counters",
+    "experience" => "Experience counters",
     _=> button, 
   };
 }
