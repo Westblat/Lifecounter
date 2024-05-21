@@ -77,12 +77,11 @@ class BackgroundWidget extends StatelessWidget {
       Row(
         children: [
           for (String button in allBackgrounds)
-            Container(
+            SizedBox(
               height: 50,
               width: 50,
               child: IconButton(onPressed: () => setBackground(playerNumber, button), icon: Image.asset(getImage(button)),),
-            )
-              
+            )  
           ]
       ),
     ],

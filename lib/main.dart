@@ -62,7 +62,7 @@ class MyAppState extends ChangeNotifier {
   }
 
   late var commanderDamage = initializeCommanderDamage();
-  var timer;
+  Timer? timer;
   
   void changeLife(player, int life) {
     var oldValue = players[player] ?? {"player": "", "lifetotal": 0};
@@ -70,7 +70,7 @@ class MyAppState extends ChangeNotifier {
     var lifeChange = oldValue["lifeChange"] as int;
     players[player] = {...oldValue, "lifetotal": oldLife + life, "lifeChange": lifeChange + life};
     notifyListeners();
-    if (timer != null) timer.cancel();
+    if (timer != null) timer?.cancel();
     timer = Timer(Duration(seconds: 3), () {
       players.forEach((player, _) {
         var playerData = players[player]  ?? {"player": "", "lifetotal": 0};
