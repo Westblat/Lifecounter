@@ -1,4 +1,3 @@
-import 'package:the_lifecounter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/utlis.dart';
 import 'package:the_lifecounter/player.dart';
@@ -10,11 +9,9 @@ import 'settings_widget.dart';
 class PlayerCard extends StatefulWidget {
   const PlayerCard({
     super.key,
-    required this.appState,
     required this.player,
   });
 
-  final MyAppState appState;
   final Player player;
 
   @override
@@ -41,8 +38,6 @@ class _PlayerCardState extends State<PlayerCard> {
 
   @override
   Widget build(BuildContext context) {
-    //var otherPlayers = widget.appState.getOtherPlayers(thisPlayerNumber);
-    //var commanderDamage = widget.appState.commanderDamage;
     return ListenableBuilder(
       listenable: _player,
       builder: (context, child) {
