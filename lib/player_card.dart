@@ -1,6 +1,6 @@
-import 'package:the_lifecounter/main.dart';
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/utlis.dart';
+import 'package:the_lifecounter/player.dart';
 
 import 'player_card_components.dart';
 import 'settings_widget.dart';
@@ -9,12 +9,10 @@ import 'settings_widget.dart';
 class PlayerCard extends StatefulWidget {
   const PlayerCard({
     super.key,
-    required this.appState,
     required this.player,
   });
 
-  final MyAppState appState;
-  final Map player;
+  final Player player;
 
   @override
   State<PlayerCard> createState() => _PlayerCardState();
@@ -23,7 +21,7 @@ class PlayerCard extends StatefulWidget {
 class _PlayerCardState extends State<PlayerCard> {
   var settings = false;
   List selectedButtons = ["othersMinusOne"];
-  late int thisPlayerNumber = widget.player["number"];
+  late Player _player = widget.player;
   
   void toggleSettings() {
     setState(() {
@@ -40,42 +38,44 @@ class _PlayerCardState extends State<PlayerCard> {
 
   @override
   Widget build(BuildContext context) {
-    var otherPlayers = widget.appState.getOtherPlayers(thisPlayerNumber);
-    var commanderDamage = widget.appState.commanderDamage;
-    return DecoratedBox(
-      decoration: 
-        BoxDecoration(
-          image: DecorationImage(
-            opacity: 0.5,
-            image: AssetImage(getImage(widget.player["background"]))
-          )
-      ),
-      child: Container(
-          padding: EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.blueGrey)
+    return ListenableBuilder(
+      listenable: _player,
+      builder: (context, child) {
+      return DecoratedBox(
+        decoration: 
+          BoxDecoration(
+            image: DecorationImage(
+              opacity: 0.5,
+              image: AssetImage(getImage(_player.background))
+            )
+        ),
+        child: Container(
+            padding: EdgeInsets.only(bottom: 10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.blueGrey)
+              ),
+            child: Stack(
+              children: [
+                if (settings) SettingsWidget(
+                  selectedButtons: selectedButtons, 
+                  setButtons: setButtons, 
+                  player: _player,
+                  ) else Column(
+                    children: [
+                      CommanderDamageRow(player: _player),
+                      LifeCounter(widget: widget, player: _player,),
+                      CustomButtonRow(widget: widget, player: _player, selectedButtons: selectedButtons),
+                    ],
+                  ),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: IconButton(icon: Icon(Icons.more_vert), onPressed: toggleSettings,)
+                  ),
+              ],
             ),
-          child: Stack(
-            children: [
-              if (settings) SettingsWidget(
-                selectedButtons: selectedButtons, 
-                setButtons: setButtons, 
-                changeBackground: widget.appState.changeBackground, 
-                playerNumber: thisPlayerNumber,
-                ) else Column(
-                  children: [
-                    CommanderDamageRow(otherPlayers: otherPlayers, commanderDamage: commanderDamage, thisPlayerNumber: thisPlayerNumber, dealCommanderDamage: widget.appState.dealCommanderDamage,),
-                    LifeCounter(widget: widget, thisPlayerNumber: thisPlayerNumber,),
-                    CustomButtonRow(widget: widget, thisPlayerNumber: thisPlayerNumber, selectedButtons: selectedButtons),
-                  ],
-                ),
-                Align(
-                  alignment: Alignment.bottomLeft,
-                  child: IconButton(icon: Icon(Icons.more_vert), onPressed: toggleSettings,)
-                ),
-            ],
-          ),
-      ),
+        ),
+      );
+      }
     );
   }
 }

@@ -1,8 +1,7 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
- import 'package:provider/provider.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:the_lifecounter/player.dart';
 
 import 'package:the_lifecounter/player_card.dart'; 
 
@@ -35,111 +34,35 @@ class MyApp extends StatelessWidget {
 
 
 class MyAppState extends ChangeNotifier {
-  var players = {
-    1: {"player": 1, "lifetotal": 40, "background": "monored", "lifeChange": 0},
-    2: {"player": 2, "lifetotal": 40, "background": "monogreen", "lifeChange": 0},
-    3: {"player": 3, "lifetotal": 40, "background": "monowhite", "lifeChange": 0},
-    4: {"player": 4, "lifetotal": 40, "background": "monoblack", "lifeChange": 0},
-  };
-
-  void func(int playerNumber, Map emptyCommanderDamages) {
-      var otherPlayers = getOtherPlayers(playerNumber);
-      for (var other in otherPlayers.values) {
-        emptyCommanderDamages[playerNumber] = {
-          ...emptyCommanderDamages[playerNumber],
-          other["player"]: 0
-        };
-      }
-  }
-  
-  Map initializeCommanderDamage() {
-    Map emptyCommanderDamages = {};
-    for (var number in players.keys ) {
-      emptyCommanderDamages[number]= {};
-    }
-    players.forEach((playerNumber, _) => func(playerNumber, emptyCommanderDamages));
-    return emptyCommanderDamages;
+  List<Player> getOtherPlayers(Player currentPlayer) {
+    List<Player> otherPlayers = List.from(players);
+    otherPlayers.removeWhere((player) => player == currentPlayer);
+    return otherPlayers;
   }
 
-  late var commanderDamage = initializeCommanderDamage();
-  Timer? timer;
-  
-  void changeLife(player, int life) {
-    var oldValue = players[player] ?? {"player": "", "lifetotal": 0};
-    var oldLife = oldValue["lifetotal"] as int;
-    var lifeChange = oldValue["lifeChange"] as int;
-    players[player] = {...oldValue, "lifetotal": oldLife + life, "lifeChange": lifeChange + life};
-    notifyListeners();
-    if (timer != null) timer?.cancel();
-    timer = Timer(Duration(seconds: 3), () {
-      players.forEach((player, _) {
-        var playerData = players[player]  ?? {"player": "", "lifetotal": 0};
-        players[player] = {...playerData, "lifeChange": 0};
-      });
-      notifyListeners();
-      });
-  }
-
-  void changeLifeAllPlayers(life) {
-    players.forEach((playerNumber, _) {
-      changeLife(playerNumber, life);
-    });
-  }
-
-  void changeLifeNotOne(life, player) {
-    players.forEach((playerNumber, _) {
-      if (playerNumber != player) changeLife(playerNumber, life);
-    });
-  }
-
-  void changeLifeAllOneDifferent(multiplePeopleLife, player, singlePersonLife) {
-    players.forEach((playerNumber, _) {
-      if (playerNumber != player) changeLife(playerNumber, multiplePeopleLife);
-      if (playerNumber == player) changeLife(player, singlePersonLife);
-    });
-  }
-
-  void changeBackground(playerNumber, newBackground) {
-    var oldValue = players[playerNumber] ?? {"player": "", "lifetotal": 0};
-    players[playerNumber] = {...oldValue, "background": newBackground};
-    notifyListeners();  
-  }
+  late List<Player> players = [
+    Player(playerNumber: 1, getOtherPlayers: getOtherPlayers),
+    Player(playerNumber: 2, getOtherPlayers: getOtherPlayers),
+    Player(playerNumber: 3, getOtherPlayers: getOtherPlayers),
+    Player(playerNumber: 4, getOtherPlayers: getOtherPlayers),
+  ];
 
   void restartGame() {
-    players.forEach((playerNumber, player) {
-        var oldValue = player;
-        players[playerNumber] = {...oldValue, "lifetotal": 40};
-    });
-    notifyListeners();
-  }
-
-  void dealCommanderDamage(int activePlayer, int targetPlayer, int damage) {
-    changeLife(targetPlayer, damage);
-    var oldCommanderDamage = commanderDamage[activePlayer] ?? {targetPlayer: 0};
-    if(oldCommanderDamage[targetPlayer] != null) {
-      commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: oldCommanderDamage[targetPlayer] + -damage};
+    for (Player player in players) {
+      player.resetLife();
     }
-    else {
-      commanderDamage[activePlayer] = {...oldCommanderDamage, targetPlayer: 1};
-    }
-    notifyListeners();
-  }
-
-  Map getOtherPlayers(yourPlayerNumber) {
-    var newPlayerList = Map.from(players);
-    newPlayerList.removeWhere((player, _) => player == yourPlayerNumber);
-    return newPlayerList;
   }
 
   void addPlayer() {
-    var newPlayerCount = players.length + 1;
-    players[newPlayerCount] = {"player": newPlayerCount, "lifetotal": 40, "background": "monogreen", "lifeChange": 0};
-    commanderDamage = initializeCommanderDamage();
+    players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers));
+    for(Player player in players) {
+      player.newPlayerAdded();
+    }
     notifyListeners();
   }
 
   void removePlayer(){
-    players.remove(players.length);
+    players.removeLast();
     notifyListeners();
   }
 
@@ -158,18 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    int index = 0;
     var leftSide = [];
     var rigthSide = [];
-    index = 0;
-    appState.players.forEach((playerNumber, player) {
-      if (index % 2 == 0) {
-        leftSide.add({...player, "number": playerNumber});
-      } else {
-        rigthSide.add({...player, "number": playerNumber});
-      }
-      index++;
-    });
+
+    for(Player player in appState.players) {
+      if(player.playerNumber % 2 == 0) {leftSide.add(player);}
+      else {rigthSide.add(player);}
+    }
 
     void showGlobalSettins() {
       setState(() {
@@ -180,10 +98,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Scaffold(
-          appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
-            title: Center(child: Text("The new lifecounter app")),
-          ),
           body: Stack(
             children: [
               Row(
@@ -196,15 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         for (var player in leftSide)
                           Expanded(
                             child: 
-                                RotatedBox(
-                                  quarterTurns: 1,
-                                  child: PlayerCard(appState: appState, player: player)
-                                  ),
+                              RotatedBox(
+                                quarterTurns: 1,
+                                child: PlayerCard(player: player)
                               ),
+                            ),
                     ],
-                          ),
+                  ),
                 ),
-                
                 Expanded(
                   flex: 1,
                   child: Column(
@@ -212,12 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       for (var player in rigthSide)
                           Expanded(
                             child: 
-                                RotatedBox(
-                                  quarterTurns: 3,
-                                  child: PlayerCard(appState: appState, player: player)
-                                  ),
+                              RotatedBox(
+                                quarterTurns: 3,
+                                child: PlayerCard(player: player)
                               ),
-                  ],
+                            ),
+                    ],
                   ),
                 ),
               ]

@@ -1,4 +1,5 @@
 import 'package:the_lifecounter/utlis.dart';
+import 'package:the_lifecounter/player.dart';
 import 'package:flutter/material.dart';
 
 class SettingsWidget extends StatefulWidget {
@@ -6,14 +7,12 @@ class SettingsWidget extends StatefulWidget {
     super.key,
     required this.setButtons,
     required this.selectedButtons,
-    required this.changeBackground,
-    required this.playerNumber,
+    required this.player,
     });
   
   final Function setButtons;
   final List selectedButtons;
-  final Function changeBackground;
-  final int playerNumber;
+  final Player player;
 
   @override
   State<SettingsWidget> createState() => _SettingsWidgetState();
@@ -35,7 +34,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       padding: EdgeInsets.only(left: 35, top: 10),
       child: 
       showBackground 
-      ? BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, setBackground: widget.changeBackground, playerNumber: widget.playerNumber)
+      ? BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, player: widget.player)
       : ListView(
         children: [
           Row(
@@ -61,13 +60,11 @@ class BackgroundWidget extends StatelessWidget {
   BackgroundWidget({
     super.key,
     required this.toggleBackgroundSelection,
-    required this.setBackground,
-    required this.playerNumber,
+    required this.player,
     });
   
   final Function toggleBackgroundSelection;
-  final Function setBackground;
-  final int playerNumber;
+  final Player player;
 
   @override
   Widget build (BuildContext context) {
@@ -80,7 +77,7 @@ class BackgroundWidget extends StatelessWidget {
             SizedBox(
               height: 50,
               width: 50,
-              child: IconButton(onPressed: () => setBackground(playerNumber, button), icon: Image.asset(getImage(button)),),
+              child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
             )  
           ]
       ),
