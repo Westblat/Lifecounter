@@ -110,15 +110,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         for (var player in leftSide)
                           Expanded(
                             child: 
-                                RotatedBox(
-                                  quarterTurns: 1,
-                                  child: PlayerCard(player: player)
-                                  ),
+                              RotatedBox(
+                                quarterTurns: 1,
+                                child: PlayerCard(player: player)
                               ),
+                            ),
                     ],
-                          ),
+                  ),
                 ),
-                
                 Expanded(
                   flex: 1,
                   child: Column(
@@ -126,12 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
                       for (var player in rigthSide)
                           Expanded(
                             child: 
-                                RotatedBox(
-                                  quarterTurns: 3,
-                                  child: PlayerCard(player: player)
-                                  ),
+                              RotatedBox(
+                                quarterTurns: 3,
+                                child: PlayerCard(player: player)
                               ),
-                  ],
+                            ),
+                    ],
                   ),
                 ),
               ]
