@@ -18,13 +18,43 @@ class SettingsWidget extends StatefulWidget {
   State<SettingsWidget> createState() => _SettingsWidgetState();
 }
 
-class _SettingsWidgetState extends State<SettingsWidget> {
-    var showBackground = false;
+class _SettingsWidgetState extends State<SettingsWidget>  with SingleTickerProviderStateMixin{
+  var showBackground = false;
 
-    void toggleBackgroundSelection() {
-    setState(() {
+  void toggleBackgroundSelection() {
+    if(showBackground) {
+      _animationController.reverse();
+      Future.delayed(Duration(milliseconds: 300), (){
+        setState(() {
+          showBackground = !showBackground;
+        });
+      });
+    } else {
+      setState(() {
       showBackground = !showBackground;
+      _animationController.forward();
     });
+    }
+
+  }
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+      lowerBound: 0,
+      upperBound: 1,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
   }
 
 
@@ -34,7 +64,19 @@ class _SettingsWidgetState extends State<SettingsWidget> {
       padding: EdgeInsets.only(left: 35, top: 10),
       child: 
       showBackground 
-      ? BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, player: widget.player)
+      ? 
+        AnimatedBuilder(
+          animation: _animationController,
+          child: BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, player: widget.player),
+          builder: (context, child) => 
+            SlideTransition(
+              position: 
+              Tween(
+                begin: const Offset(1, 0), 
+                end: const Offset(0, 0)
+              ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut)), 
+          child: child,)
+          )
       : ListView(
         children: [
           Row(
@@ -52,7 +94,7 @@ class _SettingsWidgetState extends State<SettingsWidget> {
           ),
         ],
       ),
-    );
+        );
   }
 }
 

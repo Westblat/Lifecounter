@@ -11,22 +11,52 @@ class PlayerCard extends StatefulWidget {
     super.key,
     required this.player,
   });
-
   final Player player;
 
   @override
   State<PlayerCard> createState() => _PlayerCardState();
 }
 
-class _PlayerCardState extends State<PlayerCard> {
+class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMixin {
+
   var settings = false;
   List selectedButtons = ["othersMinusOne"];
   late Player _player = widget.player;
-  
+  late AnimationController _animationController;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 250),
+      lowerBound: 0,
+      upperBound: 1,
+    );
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
   void toggleSettings() {
-    setState(() {
+    if(settings) {
+      _animationController.reverse();
+      Future.delayed(Duration(milliseconds: 300), (){
+        setState(() {
+          settings = !settings;
+        });
+      });
+    } else {
+      setState(() {
       settings = !settings;
+      _animationController.forward();
     });
+    }
+    
   }
 
   void setButtons(String button) {
@@ -56,11 +86,21 @@ class _PlayerCardState extends State<PlayerCard> {
               ),
             child: Stack(
               children: [
-                if (settings) SettingsWidget(
-                  selectedButtons: selectedButtons, 
-                  setButtons: setButtons, 
-                  player: _player,
-                  ) else Column(
+                if (settings) AnimatedBuilder(
+                  animation: _animationController,
+                  child: SettingsWidget(
+                    selectedButtons: selectedButtons, 
+                    setButtons: setButtons, 
+                    player: _player,
+                    ),
+                    builder: (context, child) => SlideTransition(
+                      position: 
+                      Tween(
+                        begin: const Offset(0, 1), 
+                        end: const Offset(0, 0)
+                      ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut)), 
+                  child: child,)
+                ) else Column(
                     children: [
                       CommanderDamageRow(player: _player),
                       LifeCounter(widget: widget, player: _player,),
