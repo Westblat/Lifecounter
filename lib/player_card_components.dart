@@ -1,16 +1,18 @@
 import 'package:the_lifecounter/player_card.dart';
 import 'package:the_lifecounter/utlis.dart';
 import 'package:flutter/material.dart';
+import 'package:the_lifecounter/player.dart';
+
 
 class LifeCounter extends StatelessWidget {
   const LifeCounter({
     super.key,
     required this.widget,
-    required this.thisPlayerNumber,
+    required this.player,
   });
 
   final PlayerCard widget;
-  final int thisPlayerNumber;
+  final Player player;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +20,8 @@ class LifeCounter extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          widget.player["lifeChange"] != 0 
-            ? Text("${widget.player["lifeChange"]}", style: TextStyle(fontSize: 20)) 
+          player.lifeChange != 0 
+            ? Text("${player.lifeChange}", style: TextStyle(fontSize: 20)) 
             : SizedBox(height: 29,),
             Expanded(
               child: Row(
@@ -30,17 +32,17 @@ class LifeCounter extends StatelessWidget {
                     child: IconButton(
                       iconSize: 40,
                       onPressed: () {
-                        widget.appState.changeLife(thisPlayerNumber, 1);
+                        player.changeLife(1);
                       },
                       icon: Icon(Icons.add),
                       ),
                   ),
-                  Text(widget.player["lifetotal"].toString(), style: TextStyle(fontSize: 30)),
+                  Text(player.lifeAsString(), style: TextStyle(fontSize: 30)),
                   Expanded(
                     child: IconButton(
                       iconSize: 50,
                       onPressed: () {
-                        widget.appState.changeLife(thisPlayerNumber, -1);
+                        player.changeLife(-1);
                       },
                       icon: Icon(Icons.remove),
                       ),
@@ -57,16 +59,10 @@ class LifeCounter extends StatelessWidget {
 class CommanderDamageRow extends StatelessWidget {
   const CommanderDamageRow({
     super.key,
-    required this.otherPlayers,
-    required this.commanderDamage,
-    required this.thisPlayerNumber,
-    required this.dealCommanderDamage,
+    required this.player,
   });
 
-  final Map otherPlayers;
-  final Map commanderDamage;
-  final int thisPlayerNumber;
-  final Function(int, int, int) dealCommanderDamage;
+  final Player player;
   
   @override
   Widget build(BuildContext context) {
@@ -76,22 +72,22 @@ class CommanderDamageRow extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              for (var player in otherPlayers.values)
+              for (var otherPlayer in player.otherPlayers)
                 Expanded(
                   child: MaterialButton(
-                    onPressed: () => {dealCommanderDamage(thisPlayerNumber, player["player"], -1)},
-                    onLongPress: () => {dealCommanderDamage(thisPlayerNumber, player["player"], 1)},
+                    onPressed: () => {player.dealCommanderDamage(-1, otherPlayer)},
+                    onLongPress: () => {player.dealCommanderDamage(1, otherPlayer)},
                     child: Container(
                       height: 30,
                       width: 30,
                       decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage(getImage(player["background"])), opacity: 0.3)
+                        image: DecorationImage(image: AssetImage(getImage(otherPlayer.background)), opacity: 0.3)
                       ),
                       child: 
-                      commanderDamage[thisPlayerNumber][player["player"]] != 0 ? 
+                      player.commanderDamage[otherPlayer.playerNumber] != 0 ? 
                       Center(
                         child: Text(
-                          commanderDamage[thisPlayerNumber][player["player"]].toString(),
+                          player.commanderDamage[otherPlayer.playerNumber].toString(),
                           textAlign: TextAlign.center, 
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
@@ -111,20 +107,20 @@ class CustomButtonRow extends StatelessWidget {
   const CustomButtonRow({
     super.key,
     required this.widget,
-    required this.thisPlayerNumber,
+    required this.player,
     required this.selectedButtons,
   });
 
   final List selectedButtons;
   final PlayerCard widget;
-  final int thisPlayerNumber;
+  final Player player;
 
 
-  Widget getButton(String button){
+  Widget getButton(String button, Player player){
     return switch(button) {
-      "allMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllPlayers(-1);}, child: Text("-1 /  -1")),
-      "othersMinusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeNotOne(-1, thisPlayerNumber);}, child: Text("0 / -1")),
-      "othersMinusOnePlayerPlusOne" => ElevatedButton(onPressed: () {widget.appState.changeLifeAllOneDifferent(-1, thisPlayerNumber, 1);}, child: Text("+1 / -1")),
+      "allMinusOne" => ElevatedButton(onPressed: () {player.changeLifeAllPlayers(-1);}, child: Text("-1 /  -1")),
+      "othersMinusOne" => ElevatedButton(onPressed: () {player.changeLifeOthers(-1);}, child: Text("0 / -1")),
+      "othersMinusOnePlayerPlusOne" => ElevatedButton(onPressed: () {player.changeLifeOthersAndSelf(-1, 1);}, child: Text("+1 / -1")),
       "poison" => ButtonWithState(image: AssetImage("lib/background_images/phyrexian.png")),
       "experience" => ButtonWithState(image: AssetImage("lib/background_images/experience.png")),
       _=> throw Exception("Unrecognized button"),
@@ -138,7 +134,7 @@ class CustomButtonRow extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         for (String button in selectedButtons)
-          getButton(button),
+          getButton(button, player),
         if(selectedButtons.isEmpty) SizedBox(height: 45,)
       ],
           
