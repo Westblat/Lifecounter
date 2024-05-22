@@ -86,6 +86,4 @@ class Player with ChangeNotifier {
     commanderDamage[otherPlayers.last.playerNumber] = 0;
     notifyListeners();
   }
-
-
 }
