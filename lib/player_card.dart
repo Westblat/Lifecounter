@@ -1,6 +1,6 @@
-import 'package:first_app/main.dart';
+import 'package:the_lifecounter/main.dart';
 import 'package:flutter/material.dart';
-import 'package:first_app/utlis.dart';
+import 'package:the_lifecounter/utlis.dart';
 
 import 'player_card_components.dart';
 import 'settings_widget.dart';
@@ -51,7 +51,7 @@ class _PlayerCardState extends State<PlayerCard> {
           )
       ),
       child: Container(
-          padding: EdgeInsets.only(bottom: 20),
+          padding: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.blueGrey)
             ),

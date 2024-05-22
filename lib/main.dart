@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
  import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 
-import 'package:first_app/player_card.dart'; 
+import 'package:the_lifecounter/player_card.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
-        title: 'Namer App',
+        title: 'The Lifecounter',
         theme: ThemeData(
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),

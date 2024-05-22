@@ -1,4 +1,4 @@
-import 'package:first_app/utlis.dart';
+import 'package:the_lifecounter/utlis.dart';
 import 'package:flutter/material.dart';
 
 class SettingsWidget extends StatefulWidget {

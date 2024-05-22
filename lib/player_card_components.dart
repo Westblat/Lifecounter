@@ -1,5 +1,5 @@
-import 'package:first_app/player_card.dart';
-import 'package:first_app/utlis.dart';
+import 'package:the_lifecounter/player_card.dart';
+import 'package:the_lifecounter/utlis.dart';
 import 'package:flutter/material.dart';
 
 class LifeCounter extends StatelessWidget {
@@ -21,30 +21,32 @@ class LifeCounter extends StatelessWidget {
           widget.player["lifeChange"] != 0 
             ? Text("${widget.player["lifeChange"]}", style: TextStyle(fontSize: 20)) 
             : SizedBox(height: 29,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(
-                  child: IconButton(
-                    iconSize: 40,
-                    onPressed: () {
-                      widget.appState.changeLife(thisPlayerNumber, 1);
-                    },
-                    icon: Icon(Icons.add),
-                    ),
-                ),
-                Text(widget.player["lifetotal"].toString(), style: TextStyle(fontSize: 30)),
-                Expanded(
-                  child: IconButton(
-                    iconSize: 50,
-                    onPressed: () {
-                      widget.appState.changeLife(thisPlayerNumber, -1);
-                    },
-                    icon: Icon(Icons.remove),
-                    ),
-                ),
-              ],
+            Expanded(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Expanded(
+                    child: IconButton(
+                      iconSize: 40,
+                      onPressed: () {
+                        widget.appState.changeLife(thisPlayerNumber, 1);
+                      },
+                      icon: Icon(Icons.add),
+                      ),
+                  ),
+                  Text(widget.player["lifetotal"].toString(), style: TextStyle(fontSize: 30)),
+                  Expanded(
+                    child: IconButton(
+                      iconSize: 50,
+                      onPressed: () {
+                        widget.appState.changeLife(thisPlayerNumber, -1);
+                      },
+                      icon: Icon(Icons.remove),
+                      ),
+                  ),
+                ],
+              ),
             ),
         ],
       ),
