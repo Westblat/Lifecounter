@@ -97,52 +97,54 @@ class _MyHomePageState extends State<MyHomePage> {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Scaffold(
-          body: Stack(
-            children: [
-              Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          body: SafeArea(
+            child: Stack(
               children: [
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                        for (var player in leftSide)
-                          Expanded(
-                            child: 
-                              RotatedBox(
-                                quarterTurns: 1,
-                                child: PlayerCard(player: player)
+                Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                          for (var player in leftSide)
+                            Expanded(
+                              child: 
+                                RotatedBox(
+                                  quarterTurns: 1,
+                                  child: PlayerCard(player: player)
+                                ),
                               ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    children: [
-                      for (var player in rigthSide)
-                          Expanded(
-                            child: 
-                              RotatedBox(
-                                quarterTurns: 3,
-                                child: PlayerCard(player: player)
+                  Expanded(
+                    flex: 1,
+                    child: Column(
+                      children: [
+                        for (var player in rigthSide)
+                            Expanded(
+                              child: 
+                                RotatedBox(
+                                  quarterTurns: 3,
+                                  child: PlayerCard(player: player)
+                                ),
                               ),
-                            ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ]
+                ]
+              ),
+              Align(
+                alignment: Alignment.center,
+                child: IconButton(onPressed: showGlobalSettins, icon: Icon(Icons.settings)),
+              ),
+              if(globalSettingsVisible) Align(
+                alignment: Alignment.center,
+                child: GlobalSettings(),
+              )
+              ],
             ),
-            Align(
-              alignment: Alignment.center,
-              child: IconButton(onPressed: showGlobalSettins, icon: Icon(Icons.settings)),
-            ),
-            if(globalSettingsVisible) Align(
-              alignment: Alignment.center,
-              child: GlobalSettings(),
-            )
-            ],
           ),        
         );
       }

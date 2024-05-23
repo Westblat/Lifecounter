@@ -16,6 +16,9 @@ class LifeCounter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
+    double height = MediaQuery.of(context).size.height;
+    print("width $width height $height");
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -27,20 +30,40 @@ class LifeCounter extends StatelessWidget {
                   child: Column(
                     children: [
                       SizedBox(height: 10,),
-                      MaterialButton(
-                        height: 40,
-                        onPressed: () {
-                          player.changeLife(-5);
-                        },
-                        child: Text("-5"),
+                      if(width > 335)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            MaterialButton(
+                              height: 40,
+                              onPressed: () {
+                                player.changeLife(-5);
+                              },
+                              child: Text("-5"),
+                              ),
+                          ],
                         ),
-                      MaterialButton(
-                        height: 60,
-                        onPressed: () {
-                          player.changeLife(-1);
-                        },
-                        child: Icon(Icons.remove, size: 50,),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if(width < 335 && height > 567)
+                            MaterialButton(
+                              minWidth: 10,
+                          height: 40,
+                          onPressed: () {
+                            player.changeLife(-5);
+                          },
+                          child: Text("-5"),
+                          ),
+                          MaterialButton(
+                            height: 60,
+                            onPressed: () {
+                              player.changeLife(-1);
+                            },
+                            child: Icon(Icons.remove, size: 50,),
+                            ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -49,7 +72,7 @@ class LifeCounter extends StatelessWidget {
                     player.lifeChange != 0 
                     ? Text("${player.lifeChange}", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)) 
                     : SizedBox(height: 36,),
-                    Text(player.lifeAsString(), style: TextStyle(fontSize: 50, height: 0.7)),
+                    FittedBox(fit: BoxFit.fitHeight, child: Text(player.lifeAsString(), style: TextStyle(fontSize: 50, height: 0.7))),
                   ],
                 ),
                 Expanded(
@@ -57,20 +80,40 @@ class LifeCounter extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(height: 10,),
-                      MaterialButton(
-                        height: 40,
-                        onPressed: () {
-                          player.changeLife(5);
-                        },
-                        child: Text("+5"),
+                      if(width > 335)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            MaterialButton(
+                              height: 40,
+                              onPressed: () {
+                                player.changeLife(5);
+                              },
+                              child: Text("+5"),
+                              ),
+                          ],
                         ),
-                      MaterialButton(
-                        height: 60,
-                        onPressed: () {
-                          player.changeLife(1);
-                        },
-                        child: Icon(Icons.add, size: 50,),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          MaterialButton(
+                            height: 60,
+                            onPressed: () {
+                              player.changeLife(1);
+                            },
+                            child: Icon(Icons.add, size: 50,),
+                            ),
+                            if(width < 335 && height > 567)
+                                MaterialButton(
+                                  height: 40,
+                                  minWidth: 10,
+                                  onPressed: () {
+                                    player.changeLife(5);
+                                  },
+                                  child: Text("+5"),
+                                  ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -170,8 +213,7 @@ class CustomButtonRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (String button in selectedButtons)
           getButton(button, player),
@@ -192,14 +234,16 @@ class PoisonButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
+      minWidth: 20,
       onPressed: () => {player.changePoison(1)},
       onLongPress: () => {player.changePoison(-1)},
-        child: Container(
-        height: 30,
-        width: 30,
-        decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage("lib/background_images/phyrexian.png"), opacity: 0.3)
-        ),
+        child: 
+        Container(
+          height: 30,
+          width: 30,
+          decoration: BoxDecoration(
+            image: DecorationImage(image: AssetImage("lib/background_images/phyrexian.png"), opacity: 0.3)
+          ),
         child: 
         player.poison != 0 ? 
         Center(
@@ -227,6 +271,7 @@ class ExperienceButton extends StatelessWidget {
     return MaterialButton(
       onPressed: () => {player.changeExperience(1)},
       onLongPress: () => {player.changeExperience(-1)},
+      minWidth: 20,
         child: Container(
         height: 30,
         width: 30,

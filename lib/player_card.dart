@@ -68,6 +68,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    double width = MediaQuery.of(context).size.width;
     return ListenableBuilder(
       listenable: _player,
       builder: (context, child) {
@@ -104,7 +105,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                     children: [
                       CommanderDamageRow(player: _player),
                       LifeCounter(widget: widget, player: _player,),
-                      CustomButtonRow(widget: widget, player: _player, selectedButtons: selectedButtons),
+                      if(width > 289) CustomButtonRow(widget: widget, player: _player, selectedButtons: selectedButtons),
                     ],
                   ),
                   Align(
