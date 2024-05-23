@@ -16,7 +16,15 @@ class Player with ChangeNotifier {
   int lifeChange = 0;
   Timer? timer;
   late List<Player> otherPlayers = getOtherPlayers(this);
-  late Map commanderDamage = initCommanderDamage(); 
+  late Map commanderDamage = initCommanderDamage();
+  int poison = 0;
+  int experience = 0;
+
+  @override
+  String toString() {
+    return "Player number $playerNumber $background";
+  }
+
 
   Map initCommanderDamage() {
     Map emptyCommanderDamages = {};
@@ -46,8 +54,11 @@ class Player with ChangeNotifier {
     notifyListeners();
   }
 
-  void resetLife() {
+  void resetGame() {
     life = 40;
+    poison = 0;
+    experience = 0;
+    commanderDamage = initCommanderDamage();
     notifyListeners();
   }
 
@@ -56,7 +67,7 @@ class Player with ChangeNotifier {
   }
 
   void dealCommanderDamage(int damage, Player targetPlayer) {
-    targetPlayer.changeLife(damage);
+    changeLife(damage);
     commanderDamage[targetPlayer.playerNumber] = commanderDamage[targetPlayer.playerNumber] + -damage;
     notifyListeners();
   }
@@ -84,6 +95,43 @@ class Player with ChangeNotifier {
   void newPlayerAdded() {
     otherPlayers = getOtherPlayers(this);
     commanderDamage[otherPlayers.last.playerNumber] = 0;
+    notifyListeners();
+  }
+
+  List<Player> getAllPlayers() {
+    List<Player> allPlayers = List.from(otherPlayers);
+    allPlayers.add(this);
+    allPlayers.sort((a, b) => Comparable.compare(a.playerNumber, b.playerNumber));
+    return allPlayers;
+  }
+
+  List<int> getPlayerOrder() {
+    List<int> evenPlayers = [];
+    List<int> oddPLayers = [];
+
+    for (Player player in getAllPlayers()) {
+      if(player.playerNumber % 2 == 0) {
+        evenPlayers.add(player.playerNumber);
+      } else {
+        oddPLayers.add(player.playerNumber);
+      }
+    }
+    return oddPLayers + evenPlayers.reversed.toList();
+  }
+
+  List<int> yourPlayerOrder() {
+    var order = getPlayerOrder();
+    int yourPlace = order.indexOf(playerNumber);
+    return order.sublist(yourPlace + 1) + order.sublist(0,yourPlace);
+  }
+
+  void changePoison(int newPoison) {
+    poison += newPoison;
+    notifyListeners();
+  }
+  
+  void changeExperience(int newExperience) {
+    experience += newExperience;
     notifyListeners();
   }
 }

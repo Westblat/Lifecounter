@@ -49,7 +49,7 @@ class MyAppState extends ChangeNotifier {
 
   void restartGame() {
     for (Player player in players) {
-      player.resetLife();
+      player.resetGame();
     }
   }
 
@@ -65,7 +65,6 @@ class MyAppState extends ChangeNotifier {
     players.removeLast();
     notifyListeners();
   }
-
 }
 
 
