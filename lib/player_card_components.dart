@@ -34,12 +34,12 @@ class LifeCounter extends StatelessWidget {
                         },
                         child: Text("-5"),
                         ),
-                      IconButton(
-                        iconSize: 35,
+                      MaterialButton(
+                        height: 60,
                         onPressed: () {
                           player.changeLife(-1);
                         },
-                        icon: Icon(Icons.remove),
+                        child: Icon(Icons.remove, size: 50,),
                         ),
                     ],
                   ),
@@ -64,12 +64,12 @@ class LifeCounter extends StatelessWidget {
                         },
                         child: Text("+5"),
                         ),
-                      IconButton(
-                        iconSize: 35,
+                      MaterialButton(
+                        height: 60,
                         onPressed: () {
                           player.changeLife(1);
                         },
-                        icon: Icon(Icons.add),
+                        child: Icon(Icons.add, size: 50,),
                         ),
                     ],
                   ),
