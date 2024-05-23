@@ -18,7 +18,7 @@ class LifeCounter extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
