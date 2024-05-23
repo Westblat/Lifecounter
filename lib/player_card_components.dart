@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:the_lifecounter/player_card.dart';
 import 'package:the_lifecounter/utlis.dart';
 import 'package:flutter/material.dart';
@@ -195,13 +196,19 @@ class CustomButtonRow extends StatelessWidget {
 
   Widget getButton(String button, Player player){
     return switch(button) {
-      "allMinusOne" => ElevatedButton(
+      "allMinusOne" => MaterialButton(
+        minWidth: 10,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.grey,) ),
         onPressed: () {player.changeLifeAllPlayers(-1);},
         onLongPress: () {player.changeLifeAllPlayers(1);}, child: Text("-1 /  -1")),
-      "othersMinusOne" => ElevatedButton(
+      "othersMinusOne" => MaterialButton(
+        minWidth: 10,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.grey,) ),
         onPressed: () {player.changeLifeOthers(-1);}, 
         onLongPress: () {player.changeLifeOthers(1);}, child: Text("0 / -1")),
-      "othersMinusOnePlayerPlusOne" => ElevatedButton(
+      "othersMinusOnePlayerPlusOne" => MaterialButton(
+        minWidth: 10,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.grey,) ),
         onPressed: () {player.changeLifeOthersAndSelf(-1, 1);}, 
         onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, child: Text("+1 / -1")),
       "poison" => PoisonButton(player: player),
@@ -234,7 +241,8 @@ class PoisonButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      minWidth: 20,
+      minWidth: 10,
+      shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
       onPressed: () => {player.changePoison(1)},
       onLongPress: () => {player.changePoison(-1)},
         child: 
@@ -271,7 +279,8 @@ class ExperienceButton extends StatelessWidget {
     return MaterialButton(
       onPressed: () => {player.changeExperience(1)},
       onLongPress: () => {player.changeExperience(-1)},
-      minWidth: 20,
+      minWidth: 10,
+      shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
         child: Container(
         height: 30,
         width: 30,
