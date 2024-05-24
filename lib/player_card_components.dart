@@ -31,7 +31,7 @@ class LifeCounter extends StatelessWidget {
                   child: Column(
                     children: [
                       SizedBox(height: 10,),
-                      if(width > 335)
+                      if(width > 412)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
@@ -47,7 +47,7 @@ class LifeCounter extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if(width < 335 && height > 567)
+                          if(width < 412 && height > 567)
                             MaterialButton(
                               minWidth: 10,
                           height: 40,
@@ -81,7 +81,7 @@ class LifeCounter extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(height: 10,),
-                      if(width > 335)
+                      if(width > 412)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -104,7 +104,7 @@ class LifeCounter extends StatelessWidget {
                             },
                             child: Icon(Icons.add, size: 50,),
                             ),
-                            if(width < 335 && height > 567)
+                            if(width < 412 && height > 567)
                                 MaterialButton(
                                   height: 40,
                                   minWidth: 10,
