@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:the_lifecounter/player.dart';
 
 import 'package:the_lifecounter/player_card.dart'; 
+import 'package:the_lifecounter/online.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
         ),
-        home: MyHomePage(),
+        home: OnlineGame(),
       ),
     );
   }
