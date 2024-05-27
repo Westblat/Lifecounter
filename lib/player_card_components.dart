@@ -155,11 +155,12 @@ class CommanderDamageRow extends StatelessWidget {
                   child: MaterialButton(
                     onPressed: () => {player.dealCommanderDamage(-1, otherPlayer)},
                     onLongPress: () => {player.dealCommanderDamage(1, otherPlayer)},
+                    color: getBackgroundColor(otherPlayer.background),
                     child: Container(
                       height: 30,
-                      width: 30,
+                      width: 30,      
                       decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage(getImage(otherPlayer.background)), opacity: 0.3)
+                        image: DecorationImage(image: AssetImage(getImage(otherPlayer.background)), opacity: 0.3,)                        
                       ),
                       child: 
                       player.commanderDamage[otherPlayer.playerNumber] != 0 ? 

@@ -75,9 +75,11 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
       return DecoratedBox(
         decoration: 
           BoxDecoration(
+            color: getBackgroundColor(_player.background),
             image: DecorationImage(
-              opacity: 0.5,
-              image: AssetImage(getImage(_player.background))
+              opacity: 0.3,
+              image: AssetImage(getImage(_player.background)),
+              
             )
         ),
         child: Container(
