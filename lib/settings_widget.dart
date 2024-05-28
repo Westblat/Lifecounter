@@ -115,7 +115,27 @@ class BackgroundWidget extends StatelessWidget {
       ElevatedButton(onPressed: () => toggleBackgroundSelection(), child: Text("Close")),
       Row(
         children: [
-          for (String button in allBackgrounds)
+          for (String button in monoBackgrounds)
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+            )  
+          ]
+      ),
+      Row(
+        children: [
+          for (String button in dualBackgrounds)
+            SizedBox(
+              height: 50,
+              width: 50,
+              child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+            )  
+          ]
+      ),
+      Row(
+        children: [
+          for (String button in trioBackgrounds)
             SizedBox(
               height: 50,
               width: 50,

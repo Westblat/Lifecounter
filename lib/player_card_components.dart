@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:the_lifecounter/player_card.dart';
 import 'package:the_lifecounter/utlis.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +18,6 @@ class LifeCounter extends StatelessWidget {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
-    print("width $width height $height");
     return Expanded(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -144,43 +142,60 @@ class CommanderDamageRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List<Player> order = getOtherPlayerOrder();
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              for (var otherPlayer in order)
-                Expanded(
-                  child: MaterialButton(
-                    onPressed: () => {player.dealCommanderDamage(-1, otherPlayer)},
-                    onLongPress: () => {player.dealCommanderDamage(1, otherPlayer)},
-                    color: getBackgroundColor(otherPlayer.background),
+    return ListenableBuilder(
+      listenable: Listenable.merge(order),
+      builder: (context, child) {
+
+    return 
+        Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                for (var otherPlayer in order)
+                  Expanded(
                     child: Container(
-                      height: 48,
-                      width: 30,      
                       decoration: BoxDecoration(
-                        image: DecorationImage(image: AssetImage(getImage(otherPlayer.background)), opacity: 0.3,)                        
+                        gradient: !isMonoColor(otherPlayer.background) ? getGradient(otherPlayer.background): null,
+                        color: isMonoColor(otherPlayer.background) ? getBackgroundColor(otherPlayer.background) : null,
                       ),
-                      child: 
-                      player.commanderDamage[otherPlayer.playerNumber] != 0 ? 
-                      Center(
-                        child: Text(
-                          player.commanderDamage[otherPlayer.playerNumber].toString(),
-                          textAlign: TextAlign.center, 
-                          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      child: MaterialButton(
+                        onPressed: () => {player.dealCommanderDamage(-1, otherPlayer)},
+                        onLongPress: () => {player.dealCommanderDamage(1, otherPlayer)},
+                        child: Container(
+                          height: 48,
+                          width: 30, 
+                          decoration: BoxDecoration(
+                              image:player.icon ?  DecorationImage(
+                                opacity: 0.3,
+                                image: AssetImage(getImage(otherPlayer.background)
+                                ),
+                              ) : null
+                              ),
+                          child: 
+                          player.commanderDamage[otherPlayer.playerNumber] != 0 ? 
+                          Center(
+                            child: Text(
+                              player.commanderDamage[otherPlayer.playerNumber].toString(),
+                              textAlign: TextAlign.center, 
+                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            ),
+                          )
+                          : null
                         ),
-                      )
-                      : null
+                      ),
                     ),
                   ),
-                ),
-            ],
-          ),
-      ],
-    );
+              ],
+            ),
+        ],
+      );
+      }
+        );
   }
 }
+
 
 class CustomButtonRow extends StatelessWidget {
   const CustomButtonRow({

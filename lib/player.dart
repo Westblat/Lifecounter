@@ -12,13 +12,14 @@ class Player with ChangeNotifier {
   final Function getOtherPlayers;
 
   int life = 40;
-  late String background = allBackgrounds[playerNumber % allBackgrounds.length];
+  late String background = monoBackgrounds[playerNumber % monoBackgrounds.length];
   int lifeChange = 0;
   Timer? timer;
   late List<Player> otherPlayers = getOtherPlayers(this);
   late Map commanderDamage = initCommanderDamage();
   int poison = 0;
   int experience = 0;
+  bool icon = true;
 
   @override
   String toString() {
