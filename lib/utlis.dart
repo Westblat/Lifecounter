@@ -3,7 +3,7 @@ import 'package:the_lifecounter/player.dart';
 
 List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "poison", "experience"];
 List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue"];
-List dualBackgrounds = ["dimir"];
+List dualBackgrounds = ["azorius", "boros", "dimir", "golgari", "gruul", "izzet", "orzhov", "rakdos", "selesnya", "simic"];
 List trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper"];
 
 String getImage(String image){
@@ -19,6 +19,15 @@ String getImage(String image){
     "naya" => "lib/background_images/naya_icon.png",
     "esper" => "lib/background_images/esper_icon.png",
     "bant" => "lib/background_images/bant_icon.png",
+    "azorius" => "lib/background_images/azorius_icon.png",
+    "boros" => "lib/background_images/boros_icon.png",
+    "golgari" => "lib/background_images/golgari_icon.png",
+    "gruul" => "lib/background_images/gruul_icon.png",
+    "izzet" => "lib/background_images/izzet_icon.png",
+    "orzhov" => "lib/background_images/orzhov_icon.png",
+    "rakdos" => "lib/background_images/rakdos_icon.png",
+    "selesnya" => "lib/background_images/selesnya_icon.png",
+    "simic" => "lib/background_images/simic_icon.png",
     _=> throw Exception("Unexpexted file"),
   };
 }
@@ -48,7 +57,16 @@ Color getColor(String color) {
 
 LinearGradient getGradient(String image){
   return switch(image) {
+    "azorius" => LinearGradient(colors: [getColor("blue"), getColor("white")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "boros" => LinearGradient(colors: [getColor("white"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
     "dimir" => LinearGradient(colors: [getColor("blue"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "golgari" => LinearGradient(colors: [getColor("green"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "gruul" => LinearGradient(colors: [getColor("green"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "izzet" => LinearGradient(colors: [getColor("blue"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "orzhov" => LinearGradient(colors: [getColor("white"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "rakdos" => LinearGradient(colors: [getColor("red"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "selesnya" => LinearGradient(colors: [getColor("white"), getColor("green")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
+    "simic" => LinearGradient(colors: [getColor("blue"), getColor("green")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
     "grixis" => LinearGradient(colors: [getColor("blue"), getColor("black"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
     "jund" => LinearGradient(colors: [getColor("black"), getColor("red"), getColor("green")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
     "bant" => LinearGradient(colors: [getColor("green"), getColor("white"), getColor("blue")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),

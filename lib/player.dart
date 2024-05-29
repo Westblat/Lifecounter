@@ -135,4 +135,9 @@ class Player with ChangeNotifier {
     experience += newExperience;
     notifyListeners();
   }
+
+  void toggleIcon() {
+    icon = !icon;
+    notifyListeners();
+  }
 }

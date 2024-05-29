@@ -110,38 +110,66 @@ class BackgroundWidget extends StatelessWidget {
 
   @override
   Widget build (BuildContext context) {
-  return Column(
+  return ListView(
+    scrollDirection: Axis.vertical,
     children: [
       ElevatedButton(onPressed: () => toggleBackgroundSelection(), child: Text("Close")),
-      Row(
-        children: [
-          for (String button in monoBackgrounds)
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
-            )  
-          ]
+      CheckboxListTile(title: Text("Show player icons"),value: player.icon, onChanged:  (_) => player.toggleIcon()),
+      SizedBox(
+        height: 50,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            for (String button in monoBackgrounds)
+              Container(
+                decoration: BoxDecoration(color: getBackgroundColor(button)),
+                margin: EdgeInsets.only(right: 10),
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+                ),
+              )  
+            ]
+        ),
       ),
-      Row(
-        children: [
-          for (String button in dualBackgrounds)
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
-            )  
-          ]
+      SizedBox(height: 20,),
+      SizedBox(
+        height: 50,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            for (String button in dualBackgrounds) 
+              Container(
+                decoration: BoxDecoration(gradient: getGradient(button)),
+                margin: EdgeInsets.only(right: 10),
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+                ),
+              )  
+            ]
+        ),
       ),
-      Row(
-        children: [
-          for (String button in trioBackgrounds)
-            SizedBox(
-              height: 50,
-              width: 50,
-              child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
-            )  
-          ]
+      SizedBox(height: 20,),
+      SizedBox(
+        height: 50,
+        child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            for (String button in trioBackgrounds)
+              Container(
+                decoration: BoxDecoration(gradient: getGradient(button),),
+                margin: EdgeInsets.only(right: 10),
+                child: SizedBox(
+                  height: 50,
+                  width: 50,
+                  child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+                ),
+              )  
+            ]
+        ),
       ),
     ],
   );
