@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:the_lifecounter/utlis.dart';
 import 'package:the_lifecounter/player.dart';
 
-import 'player_card_components.dart';
+import 'commander_damage_row.dart';
+import 'life_counter.dart';
+import 'package:the_lifecounter/player_card_buttons.dart';
 import 'settings_widget.dart';
 
 

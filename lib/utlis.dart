@@ -177,3 +177,34 @@ BoxDecoration getCommanderDecoration(Player player) {
 bool isMonoColor(String background) {
   return monoBackgrounds.contains(background);
 }
+
+class WhiteBorderText extends StatelessWidget {
+  WhiteBorderText({
+    super.key,
+    required this.text,
+    this.fontSize,
+    this.height,
+    this.strokeWidth = 3,
+  });
+  final String text;
+  final double? fontSize;
+  final double? height;
+  final double strokeWidth;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Text(text, style: TextStyle(fontSize: fontSize, height: height,
+                                    foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = strokeWidth
+                                    ..color = Colors.white,)),
+        Text(text, style: TextStyle(fontSize: fontSize, height: height)),
+        ]
+    
+    );
+  }
+}
+
