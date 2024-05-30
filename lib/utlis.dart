@@ -4,15 +4,15 @@ import 'package:the_lifecounter/player.dart';
 List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "poison", "experience"];
 List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue", "colorless"];
 List dualBackgrounds = ["azorius", "boros", "dimir", "golgari", "gruul", "izzet", "orzhov", "rakdos", "selesnya", "simic"];
-List trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper"];
+List trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper", "abzan", "jeskai", "sultai", "mardu", "temur"];
 
 String getImage(String image){
   return switch(image) {
     "monored" => "lib/background_images/monored_icon.png",
-    "monogreen" => ("lib/background_images/monogreen_icon.png"),
-    "monowhite" => ("lib/background_images/monowhite_icon.png"),
-    "monoblue" => ("lib/background_images/monoblue_icon.png"),
-    "monoblack" => ("lib/background_images/monoblack_icon.png"),
+    "monogreen" => "lib/background_images/monogreen_icon.png",
+    "monowhite" => "lib/background_images/monowhite_icon.png",
+    "monoblue" => "lib/background_images/monoblue_icon.png",
+    "monoblack" => "lib/background_images/monoblack_icon.png",
     "colorless" => "lib/background_images/colorless_icon.png",
     "dimir" => "lib/background_images/dimir_icon.png",
     "grixis" => "lib/background_images/grixis_icon.png",
@@ -29,6 +29,11 @@ String getImage(String image){
     "rakdos" => "lib/background_images/rakdos_icon.png",
     "selesnya" => "lib/background_images/selesnya_icon.png",
     "simic" => "lib/background_images/simic_icon.png",
+    "abzan" =>"lib/background_images/abzan_icon.png",
+    "jeskai" =>"lib/background_images/jeskai_icon.png",
+    "sultai" =>"lib/background_images/sultai_icon.png",
+    "mardu" =>"lib/background_images/mardu_icon.png",
+    "temur" =>"lib/background_images/temur_icon.png",
     _=> throw Exception("Unexpexted file"),
   };
 }
@@ -80,6 +85,11 @@ LinearGradient getEdgyGradient(String image, start, end){
     "bant" => LinearGradient(colors: [getColor("green"), getColor("white"), getColor("white"), getColor("blue")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
     "naya" => LinearGradient(colors: [getColor("red"), getColor("green"), getColor("green"), getColor("white")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
     "esper" => LinearGradient(colors: [getColor("white"), getColor("blue"), getColor("blue"), getColor("black")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "abzan" => LinearGradient(colors: [getColor("white"), getColor("black"), getColor("black"), getColor("green")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "jeskai" => LinearGradient(colors: [getColor("blue"), getColor("red"), getColor("red"), getColor("white")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "sultai" => LinearGradient(colors: [getColor("black"), getColor("green"), getColor("green"), getColor("blue")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "mardu" => LinearGradient(colors: [getColor("red"), getColor("white"), getColor("white"), getColor("black")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "temur" => LinearGradient(colors: [getColor("green"), getColor("blue"), getColor("blue"), getColor("red")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
     _=> throw Exception("Unexpexted file"),
   };
 }
@@ -101,6 +111,11 @@ LinearGradient getBlurGradient(String image, start, end){
     "bant" => LinearGradient(colors: [getColor("green"), getColor("white"), getColor("blue")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
     "naya" => LinearGradient(colors: [getColor("red"), getColor("green"), getColor("white")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
     "esper" => LinearGradient(colors: [getColor("white"), getColor("blue"), getColor("black")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "abzan" => LinearGradient(colors: [getColor("white"), getColor("black"), getColor("green")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "jeskai" => LinearGradient(colors: [getColor("blue"), getColor("red"), getColor("white")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "sultai" => LinearGradient(colors: [getColor("black"), getColor("green"), getColor("blue")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "mardu" => LinearGradient(colors: [getColor("red"), getColor("white"), getColor("black")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "temur" => LinearGradient(colors: [getColor("green"), getColor("blue"), getColor("red")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
     _=> throw Exception("Unexpexted file"),
   };
 }
