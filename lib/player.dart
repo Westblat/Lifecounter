@@ -20,6 +20,7 @@ class Player with ChangeNotifier {
   int poison = 0;
   int experience = 0;
   bool icon = true;
+  bool blur = false;
 
   @override
   String toString() {
@@ -138,6 +139,11 @@ class Player with ChangeNotifier {
 
   void toggleIcon() {
     icon = !icon;
+    notifyListeners();
+  }
+
+  void toggleBlur() {
+    blur = !blur;
     notifyListeners();
   }
 }

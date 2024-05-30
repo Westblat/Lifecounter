@@ -38,7 +38,7 @@ class LifeCounter extends StatelessWidget {
                               onPressed: () {
                                 player.changeLife(-5);
                               },
-                              child: Text("-5"),
+                              child: WhiteBorderText(text: "- 5", strokeWidth: 2,),
                               ),
                           ],
                         ),
@@ -48,18 +48,18 @@ class LifeCounter extends StatelessWidget {
                           if(width < 412 && height > 567)
                             MaterialButton(
                               minWidth: 10,
-                          height: 40,
-                          onPressed: () {
-                            player.changeLife(-5);
-                          },
-                          child: Text("-5"),
+                              height: 40,
+                              onPressed: () {
+                                player.changeLife(-5);
+                              },
+                              child: WhiteBorderText(text: "- 5", strokeWidth: 2),
                           ),
                           MaterialButton(
                             height: 60,
                             onPressed: () {
                               player.changeLife(-1);
                             },
-                            child: Icon(Icons.remove, size: 50,),
+                            child: WhiteBorderText(text: "–", fontSize: 50,),
                             ),
                         ],
                       ),
@@ -69,9 +69,10 @@ class LifeCounter extends StatelessWidget {
                 Column(
                   children: [
                     player.lifeChange != 0 
-                    ? Text("${player.lifeChange}", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)) 
+                    ? WhiteBorderText(text: "${player.lifeChange}", fontSize: 25) 
                     : SizedBox(height: 36,),
-                    FittedBox(fit: BoxFit.fitHeight, child: Text(player.lifeAsString(), style: TextStyle(fontSize: 50, height: 0.7))),
+                    FittedBox(fit: BoxFit.fitHeight, child: WhiteBorderText(text: player.lifeAsString(), fontSize: 50, height: 0.7,)
+                    ),
                   ],
                 ),
                 Expanded(
@@ -88,7 +89,7 @@ class LifeCounter extends StatelessWidget {
                               onPressed: () {
                                 player.changeLife(5);
                               },
-                              child: Text("+5"),
+                              child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
                               ),
                           ],
                         ),
@@ -100,7 +101,7 @@ class LifeCounter extends StatelessWidget {
                             onPressed: () {
                               player.changeLife(1);
                             },
-                            child: Icon(Icons.add, size: 50,),
+                            child: WhiteBorderText(text: "+", fontSize: 50,),
                             ),
                             if(width < 412 && height > 567)
                                 MaterialButton(
@@ -109,7 +110,7 @@ class LifeCounter extends StatelessWidget {
                                   onPressed: () {
                                     player.changeLife(5);
                                   },
-                                  child: Text("+5"),
+                                  child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
                                   ),
                         ],
                       ),
@@ -120,6 +121,36 @@ class LifeCounter extends StatelessWidget {
             ),
         ],
       ),
+    );
+  }
+}
+
+class WhiteBorderText extends StatelessWidget {
+  WhiteBorderText({
+    super.key,
+    required this.text,
+    this.fontSize,
+    this.height,
+    this.strokeWidth = 3,
+  });
+  final String text;
+  double? fontSize;
+  double? height;
+  double strokeWidth;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Text(text, style: TextStyle(fontSize: fontSize, height: height,
+                                    foreground: Paint()
+                                    ..style = PaintingStyle.stroke
+                                    ..strokeWidth = strokeWidth
+                                    ..color = Colors.white,)),
+        Text(text, style: TextStyle(fontSize: fontSize, height: height)),
+        ]
+    
     );
   }
 }
@@ -157,7 +188,8 @@ class CommanderDamageRow extends StatelessWidget {
                   Expanded(
                     child: Container(
                       decoration: BoxDecoration(
-                        gradient: !isMonoColor(otherPlayer.background) ? getGradient(otherPlayer.background): null,
+                        border: Border.all(color: Colors.blueGrey),
+                        gradient: !isMonoColor(otherPlayer.background) ? getGradient(otherPlayer.background, otherPlayer) : null,
                         color: isMonoColor(otherPlayer.background) ? getBackgroundColor(otherPlayer.background) : null,
                       ),
                       child: MaterialButton(
@@ -176,10 +208,10 @@ class CommanderDamageRow extends StatelessWidget {
                           child: 
                           player.commanderDamage[otherPlayer.playerNumber] != 0 ? 
                           Center(
-                            child: Text(
-                              player.commanderDamage[otherPlayer.playerNumber].toString(),
-                              textAlign: TextAlign.center, 
-                              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                            child: WhiteBorderText(
+                              text: player.commanderDamage[otherPlayer.playerNumber].toString(),
+                              fontSize: 20,
+                              strokeWidth: 1,
                             ),
                           )
                           : null
@@ -214,19 +246,19 @@ class CustomButtonRow extends StatelessWidget {
     return switch(button) {
       "allMinusOne" => MaterialButton(
         minWidth: 10,
-        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.grey,) ),
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
         onPressed: () {player.changeLifeAllPlayers(-1);},
-        onLongPress: () {player.changeLifeAllPlayers(1);}, child: Text("-1/-1", style: TextStyle(fontWeight: FontWeight.bold))),
+        onLongPress: () {player.changeLifeAllPlayers(1);}, child: WhiteBorderText(text: "- 1 / - 1", strokeWidth: 1,)),
       "othersMinusOne" => MaterialButton(
         minWidth: 10,
-        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.grey,) ),
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
         onPressed: () {player.changeLifeOthers(-1);}, 
-        onLongPress: () {player.changeLifeOthers(1);}, child: Text("0/-1", style: TextStyle(fontWeight: FontWeight.bold))),
+        onLongPress: () {player.changeLifeOthers(1);}, child: WhiteBorderText(text: "0 /- 1", strokeWidth: 1,)),
       "othersMinusOnePlayerPlusOne" => MaterialButton(
         minWidth: 10,
-        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.grey,) ),
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
         onPressed: () {player.changeLifeOthersAndSelf(-1, 1);}, 
-        onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, child: Text("+1/-1", style: TextStyle(fontWeight: FontWeight.bold),)),
+        onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, child: WhiteBorderText(text: "+ 1/ - 1",strokeWidth: 1,)),
       "poison" => PoisonButton(player: player),
       "experience" => ExperienceButton(player: player,),
       _=> throw Exception("Unrecognized button"),
@@ -266,15 +298,14 @@ class PoisonButton extends StatelessWidget {
           height: 30,
           width: 30,
           decoration: BoxDecoration(
-            image: DecorationImage(image: AssetImage("lib/background_images/phyrexian.png"), opacity: 0.3)
+            image: DecorationImage(image: AssetImage("lib/background_images/phyrexian_icon.png"), opacity: 0.3)
           ),
         child: 
         player.poison != 0 ? 
         Center(
-          child: Text(
-            player.poison.toString(), 
-            textAlign: TextAlign.center, 
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          child: WhiteBorderText(
+            text: player.poison.toString(), 
+            fontSize: 20,
             ),
         )
         : null
@@ -301,15 +332,14 @@ class ExperienceButton extends StatelessWidget {
         height: 30,
         width: 30,
         decoration: BoxDecoration(
-          image: DecorationImage(image: AssetImage("lib/background_images/experience.png"), opacity: 0.3)
+          image: DecorationImage(image: AssetImage("lib/background_images/experience_icon.png"), opacity: 0.3)
         ),
         child: 
         player.experience != 0 ? 
         Center(
-          child: Text(
-            player.experience.toString(), 
-            textAlign: TextAlign.center, 
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          child: WhiteBorderText(
+            text: player.experience.toString(), 
+            fontSize: 20,
             ),
         )
         : null

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:the_lifecounter/player.dart';
 
 List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "poison", "experience"];
-List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue"];
+List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue", "colorless"];
 List dualBackgrounds = ["azorius", "boros", "dimir", "golgari", "gruul", "izzet", "orzhov", "rakdos", "selesnya", "simic"];
 List trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper"];
 
@@ -13,6 +13,7 @@ String getImage(String image){
     "monowhite" => ("lib/background_images/monowhite_icon.png"),
     "monoblue" => ("lib/background_images/monoblue_icon.png"),
     "monoblack" => ("lib/background_images/monoblack_icon.png"),
+    "colorless" => "lib/background_images/colorless_icon.png",
     "dimir" => "lib/background_images/dimir_icon.png",
     "grixis" => "lib/background_images/grixis_icon.png",
     "jund" => "lib/background_images/jund_icon.png",
@@ -39,6 +40,7 @@ Color getBackgroundColor(String image){
     "monowhite" => getColor("white"),
     "monoblue" => getColor("blue"),
     "monoblack" => getColor("black"),
+    "colorless" => getColor("grey"),
     _=> throw Exception("Unexpexted file"),
   };
 }
@@ -50,28 +52,55 @@ Color getColor(String color) {
     "white" => const Color.fromRGBO(255, 255, 255, 1),
     "blue" => Color.fromARGB(255, 107, 163, 209),
     "black" => Color.fromARGB(255, 102, 96, 96),
+    "grey" => Colors.grey,
     _=> throw Exception("Unexpexted color"),
   };
 }
 
+LinearGradient getGradient(String image, Player player) {
+  Alignment start = player.playerNumber % 2 == 0 ? Alignment.topLeft : Alignment.topRight;
+  Alignment end = player.playerNumber % 2 == 0 ? Alignment.bottomRight : Alignment.bottomLeft;
+  return player.blur ? getBlurGradient(image, start, end) : getEdgyGradient(image, start, end);
+}
 
-LinearGradient getGradient(String image){
+LinearGradient getEdgyGradient(String image, start, end){
   return switch(image) {
-    "azorius" => LinearGradient(colors: [getColor("blue"), getColor("white")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "boros" => LinearGradient(colors: [getColor("white"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "dimir" => LinearGradient(colors: [getColor("blue"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "golgari" => LinearGradient(colors: [getColor("green"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "gruul" => LinearGradient(colors: [getColor("green"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "izzet" => LinearGradient(colors: [getColor("blue"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "orzhov" => LinearGradient(colors: [getColor("white"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "rakdos" => LinearGradient(colors: [getColor("red"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "selesnya" => LinearGradient(colors: [getColor("white"), getColor("green")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "simic" => LinearGradient(colors: [getColor("blue"), getColor("green")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.5, 0.5]),
-    "grixis" => LinearGradient(colors: [getColor("blue"), getColor("black"), getColor("red")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
-    "jund" => LinearGradient(colors: [getColor("black"), getColor("red"), getColor("green")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
-    "bant" => LinearGradient(colors: [getColor("green"), getColor("white"), getColor("blue")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
-    "naya" => LinearGradient(colors: [getColor("red"), getColor("green"), getColor("white")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
-    "esper" => LinearGradient(colors: [getColor("white"), getColor("blue"), getColor("black")], begin: Alignment.topLeft, end: Alignment.bottomRight, stops: [0.2, 0.5, 0.8]),
+    "azorius" => LinearGradient(colors: [getColor("blue"), getColor("white")], begin: start, end: end, stops: [0.5, 0.5]),
+    "boros" => LinearGradient(colors: [getColor("white"), getColor("red")], begin: start, end: end, stops: [0.5, 0.5]),
+    "dimir" => LinearGradient(colors: [getColor("blue"), getColor("black")], begin: start, end: end, stops: [0.5, 0.5]),
+    "golgari" => LinearGradient(colors: [getColor("green"), getColor("black")], begin: start, end: end, stops: [0.5, 0.5]),
+    "gruul" => LinearGradient(colors: [getColor("green"), getColor("red")], begin: start, end: end, stops: [0.5, 0.5]),
+    "izzet" => LinearGradient(colors: [getColor("blue"), getColor("red")], begin: start, end: end, stops: [0.5, 0.5]),
+    "orzhov" => LinearGradient(colors: [getColor("white"), getColor("black")], begin: start, end: end, stops: [0.5, 0.5]),
+    "rakdos" => LinearGradient(colors: [getColor("red"), getColor("black")], begin: start, end: end, stops: [0.5, 0.5]),
+    "selesnya" => LinearGradient(colors: [getColor("white"), getColor("green")], begin: start, end: end, stops: [0.5, 0.5]),
+    "simic" => LinearGradient(colors: [getColor("blue"), getColor("green")], begin: start, end: end, stops: [0.5, 0.5]),
+    "grixis" => LinearGradient(colors: [getColor("blue"), getColor("black"), getColor("black"), getColor("red")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "jund" => LinearGradient(colors: [getColor("black"), getColor("red"), getColor("red"), getColor("green")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "bant" => LinearGradient(colors: [getColor("green"), getColor("white"), getColor("white"), getColor("blue")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "naya" => LinearGradient(colors: [getColor("red"), getColor("green"), getColor("green"), getColor("white")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    "esper" => LinearGradient(colors: [getColor("white"), getColor("blue"), getColor("blue"), getColor("black")], begin: start, end: end, stops: [0.3, 0.3, 0.6, 0.6]),
+    _=> throw Exception("Unexpexted file"),
+  };
+}
+
+LinearGradient getBlurGradient(String image, start, end){
+  return switch(image) {
+    "azorius" => LinearGradient(colors: [getColor("blue"), getColor("white")], begin: start, end: end, stops: [0.3, 0.8]),
+    "boros" => LinearGradient(colors: [getColor("white"), getColor("red")], begin: start, end: end, stops: [0.3, 0.8]),
+    "dimir" => LinearGradient(colors: [getColor("blue"), getColor("black")], begin: start, end: end, stops: [0.3, 0.8]),
+    "golgari" => LinearGradient(colors: [getColor("green"), getColor("black")], begin: start, end: end, stops: [0.3, 0.8]),
+    "gruul" => LinearGradient(colors: [getColor("green"), getColor("red")], begin: start, end: end, stops: [0.3, 0.8]),
+    "izzet" => LinearGradient(colors: [getColor("blue"), getColor("red")], begin: start, end: end, stops: [0.3, 0.8]),
+    "orzhov" => LinearGradient(colors: [getColor("white"), getColor("black")], begin: start, end: end, stops: [0.3, 0.8]),
+    "rakdos" => LinearGradient(colors: [getColor("red"), getColor("black")], begin: start, end: end, stops: [0.3, 0.8]),
+    "selesnya" => LinearGradient(colors: [getColor("white"), getColor("green")], begin: start, end: end, stops: [0.3, 0.8]),
+    "simic" => LinearGradient(colors: [getColor("blue"), getColor("green")], begin: start, end: end, stops: [0.3, 0.8]),
+    "grixis" => LinearGradient(colors: [getColor("blue"), getColor("black"), getColor("red")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "jund" => LinearGradient(colors: [getColor("black"), getColor("red"), getColor("green")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "bant" => LinearGradient(colors: [getColor("green"), getColor("white"), getColor("blue")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "naya" => LinearGradient(colors: [getColor("red"), getColor("green"), getColor("white")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
+    "esper" => LinearGradient(colors: [getColor("white"), getColor("blue"), getColor("black")], begin: start, end: end, stops: [0.2, 0.5, 0.8]),
     _=> throw Exception("Unexpexted file"),
   };
 }
@@ -100,7 +129,7 @@ BoxDecoration getDecoration(Player player) {
   );
   } else {
     return BoxDecoration(
-            gradient: getGradient(background),
+            gradient: getGradient(background, player),
             image:player.icon ?  DecorationImage(
               opacity: 0.3,
               image: AssetImage(getImage(background)),
@@ -121,7 +150,7 @@ BoxDecoration getCommanderDecoration(Player player) {
   );
   } else {
     return BoxDecoration(
-            gradient: getGradient(background),
+            gradient: getGradient(background, player),
             image:player.icon ?  DecorationImage(
               opacity: 0.3,
               image: AssetImage(getImage(background)),

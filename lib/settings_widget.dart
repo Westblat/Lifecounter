@@ -115,6 +115,7 @@ class BackgroundWidget extends StatelessWidget {
     children: [
       ElevatedButton(onPressed: () => toggleBackgroundSelection(), child: Text("Close")),
       CheckboxListTile(title: Text("Show player icons"),value: player.icon, onChanged:  (_) => player.toggleIcon()),
+      CheckboxListTile(title: Text("Blurred background"),value: player.blur, onChanged:  (_) => player.toggleBlur()),
       SizedBox(
         height: 50,
         child: ListView(
@@ -141,7 +142,7 @@ class BackgroundWidget extends StatelessWidget {
           children: [
             for (String button in dualBackgrounds) 
               Container(
-                decoration: BoxDecoration(gradient: getGradient(button)),
+                decoration: BoxDecoration(gradient: getGradient(button, player)),
                 margin: EdgeInsets.only(right: 10),
                 child: SizedBox(
                   height: 50,
@@ -160,7 +161,7 @@ class BackgroundWidget extends StatelessWidget {
           children: [
             for (String button in trioBackgrounds)
               Container(
-                decoration: BoxDecoration(gradient: getGradient(button),),
+                decoration: BoxDecoration(gradient: getGradient(button, player),),
                 margin: EdgeInsets.only(right: 10),
                 child: SizedBox(
                   height: 50,
