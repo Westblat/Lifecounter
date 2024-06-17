@@ -1,4 +1,4 @@
-package com.example.life_counter
+package com.westblat.life_counter
 
 import io.flutter.embedding.android.FlutterActivity
 
