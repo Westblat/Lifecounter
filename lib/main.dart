@@ -63,6 +63,9 @@ class MyAppState extends ChangeNotifier {
 
   void removePlayer(){
     players.removeLast();
+    for(Player player in players) {
+      player.playerRemoved();
+    }
     notifyListeners();
   }
 }

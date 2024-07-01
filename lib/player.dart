@@ -100,6 +100,12 @@ class Player with ChangeNotifier {
     notifyListeners();
   }
 
+  void playerRemoved() {
+    otherPlayers = getOtherPlayers(this);
+    commanderDamage.remove(otherPlayers.last.playerNumber + 1);
+    notifyListeners();
+  }
+
   List<Player> getAllPlayers() {
     List<Player> allPlayers = List.from(otherPlayers);
     allPlayers.add(this);
