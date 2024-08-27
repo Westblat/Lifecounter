@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
 import 'package:the_lifecounter/player.dart';
 
-import 'package:the_lifecounter/player_card.dart'; 
+import 'layouts.dart'; 
 
 void main() {
   runApp(const MyApp());
@@ -34,6 +34,12 @@ class MyApp extends StatelessWidget {
 
 
 class MyAppState extends ChangeNotifier {
+  String layout = "default";
+  void setLayout(String newLayout) {
+      layout = newLayout;
+      notifyListeners();
+    }
+
   List<Player> getOtherPlayers(Player currentPlayer) {
     List<Player> otherPlayers = List.from(players);
     otherPlayers.removeWhere((player) => player == currentPlayer);
@@ -83,15 +89,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
-    var leftSide = [];
-    var rigthSide = [];
 
-    for(Player player in appState.players) {
-      if(player.playerNumber % 2 == 0) {leftSide.add(player);}
-      else {rigthSide.add(player);}
-    }
-
-    void showGlobalSettins() {
+    void showGlobalSettings() {
       setState(() {
         globalSettingsVisible = !globalSettingsVisible;
       });
@@ -103,44 +102,15 @@ class _MyHomePageState extends State<MyHomePage> {
           body: SafeArea(
             child: Stack(
               children: [
-                Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: [
-                          for (var player in leftSide)
-                            Expanded(
-                              child: 
-                                RotatedBox(
-                                  quarterTurns: 1,
-                                  child: PlayerCard(player: player)
-                                ),
-                              ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 1,
-                    child: Column(
-                      children: [
-                        for (var player in rigthSide)
-                            Expanded(
-                              child: 
-                                RotatedBox(
-                                  quarterTurns: 3,
-                                  child: PlayerCard(player: player)
-                                ),
-                              ),
-                      ],
-                    ),
-                  ),
-                ]
-              ),
+                switch (appState.layout) {
+                    "default" => DefaultLayout(players: appState.players),
+                    "bothEnds" => PlayersBothEndLayout(players: appState.players),
+                    "oneEnd" => PlayersOneEndLayout(players: appState.players,),
+                    String() => throw UnimplementedError(),
+                  },
               Align(
                 alignment: Alignment.center,
-                child: IconButton(onPressed: showGlobalSettins, icon: Icon(Icons.settings)),
+                child: IconButton(onPressed: showGlobalSettings, icon: Icon(Icons.settings)),
               ),
               if(globalSettingsVisible) Align(
                 alignment: Alignment.center,
@@ -164,24 +134,68 @@ class GlobalSettings extends StatelessWidget {
   Widget build(BuildContext context) {
     var appState = context.watch<MyAppState>();
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(onPressed: appState.restartGame, icon: Icon(Icons.restart_alt_rounded), iconSize: 50,)
-            ],
-          ),
-          SizedBox(height: 50,),
+    return SizedBox(
+      height: 250,
+      child: Column(
+        children: [
           Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            IconButton(onPressed: appState.addPlayer, icon: Icon(Icons.add_circle_outline), iconSize: 50,),
-            IconButton(onPressed: appState.removePlayer, icon: Icon(Icons.remove_circle_outline), iconSize: 50,)
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(onPressed: appState.restartGame, icon: Icon(Icons.restart_alt_rounded), iconSize: 50,)
+              ],
+            ),
+            const SizedBox(height: 10,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(onPressed: appState.addPlayer, icon: Icon(Icons.add_circle_outline), iconSize: 50,),
+                SizedBox(width: 40,),
+                IconButton(onPressed: appState.removePlayer, icon: Icon(Icons.remove_circle_outline), iconSize: 50,)
+              ],
+            ),
+            SizedBox(height: 20,),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: const Color.fromARGB(255, 82, 82, 82),
+                      width: 4, 
+                    )
+                  ),
+                  child: IconButton(onPressed: () => appState.setLayout("default"), icon: Image.asset("lib/custom_icons/default_icon.png", height: 50, width: 50,), )
+                  ),
+                  const SizedBox(width: 5,),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 82, 82, 82),
+                        width: 4, 
+                      )
+                    ),
+                  child: IconButton(onPressed: () => appState.setLayout("bothEnds"), icon: Image.asset("lib/custom_icons/both_ends_icon.png", height: 50, width: 50,), )
+                  ),
+                  const SizedBox(width: 5,),
+                  Container(
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: Colors.transparent,
+                      border: Border.all(
+                        color: const Color.fromARGB(255, 82, 82, 82),
+                        width: 4, 
+                      )
+                    ),
+                  child: IconButton(onPressed: () => appState.setLayout("oneEnd"), icon: Image.asset("lib/custom_icons/one_end_icon.png", height: 50, width: 50,), )
+                  ),
+              ],
+            ),
           ],
-          ),
-        ],
+      ),
     );
   }
 }
