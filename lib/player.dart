@@ -6,12 +6,14 @@ class Player with ChangeNotifier {
   Player({
     required this.playerNumber,
     required this.getOtherPlayers,
+    this.gameMode = 'commander',
   });
 
   final int playerNumber;
   final Function getOtherPlayers;
 
-  int life = 40;
+  String gameMode;
+  late int life = gameMode == 'standard' ? 20 : 40;
   late String background = monoBackgrounds[playerNumber % monoBackgrounds.length];
   int lifeChange = 0;
   Timer? timer;
@@ -57,10 +59,18 @@ class Player with ChangeNotifier {
   }
 
   void resetGame() {
-    life = 40;
+    print(gameMode);
+    if(gameMode == 'commander') life = 40;
+    if(gameMode == 'standard') life = 20;
     poison = 0;
     experience = 0;
     commanderDamage = initCommanderDamage();
+    notifyListeners();
+  }
+
+  void setGameMode(String targetGameMode) {
+    gameMode = targetGameMode;
+    otherPlayers = getOtherPlayers(this);
     notifyListeners();
   }
 
@@ -96,13 +106,13 @@ class Player with ChangeNotifier {
 
   void newPlayerAdded() {
     otherPlayers = getOtherPlayers(this);
-    commanderDamage[otherPlayers.last.playerNumber] = 0;
+    if(gameMode == 'commander') commanderDamage[otherPlayers.last.playerNumber] = 0;
     notifyListeners();
   }
 
   void playerRemoved() {
     otherPlayers = getOtherPlayers(this);
-    commanderDamage.remove(otherPlayers.last.playerNumber + 1);
+    if(gameMode == 'commander') commanderDamage.remove(otherPlayers.last.playerNumber + 1);
     notifyListeners();
   }
 

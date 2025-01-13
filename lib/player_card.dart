@@ -12,15 +12,16 @@ class PlayerCard extends StatefulWidget {
   const PlayerCard({
     super.key,
     required this.player,
+    this.standard = false,
   });
   final Player player;
+  final bool standard;
 
   @override
   State<PlayerCard> createState() => _PlayerCardState();
 }
 
 class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMixin {
-
   var settings = false;
   List selectedButtons = ["othersMinusOne"];
   late Player _player = widget.player;
@@ -99,7 +100,7 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
                   child: child,)
                 ) else Column(
                     children: [
-                      CommanderDamageRow(player: _player),
+                      if(!widget.standard) CommanderDamageRow(player: _player),
                       LifeCounter(widget: widget, player: _player,),
                       if(width > 289) CustomButtonRow(widget: widget, player: _player, selectedButtons: selectedButtons),
                     ],

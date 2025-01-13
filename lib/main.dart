@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:the_lifecounter/global_settings.dart';
 import 'package:the_lifecounter/player.dart';
 
 import 'layouts.dart'; 
@@ -38,13 +39,32 @@ class MyAppState extends ChangeNotifier {
   void setLayout(String newLayout) {
       layout = newLayout;
       notifyListeners();
-    }
+  }
+  String gameMode = 'commander';
 
   List<Player> getOtherPlayers(Player currentPlayer) {
+    if (gameMode == 'standard') return getOtherPlayersStandard(currentPlayer);
+    return getOtherPlayersCommander(currentPlayer);
+  }
+
+
+  List<Player> getOtherPlayersCommander(Player currentPlayer) {
     List<Player> otherPlayers = List.from(players);
     otherPlayers.removeWhere((player) => player == currentPlayer);
     return otherPlayers;
   }
+
+  List<Player> getOtherPlayersStandard(Player currentPlayer) {
+    // Players are paired as 1 and 2, meaning that numbers modulo 2 that are 0 are pared with the lower person 
+    List<Player> otherPlayers;
+    if(currentPlayer.playerNumber % 2 == 0){
+      otherPlayers = players.where((player) => player.playerNumber == currentPlayer.playerNumber - 1).toList();
+    } else {
+      otherPlayers = players.where((player) => player.playerNumber == currentPlayer.playerNumber + 1).toList();
+    }
+    return otherPlayers;
+  }
+
 
   late List<Player> players = [
     Player(playerNumber: 1, getOtherPlayers: getOtherPlayers),
@@ -53,24 +73,64 @@ class MyAppState extends ChangeNotifier {
     Player(playerNumber: 4, getOtherPlayers: getOtherPlayers),
   ];
 
+  void setGameMode(String newGameMode){
+    gameMode = newGameMode;
+    for (Player player in players) {
+      player.setGameMode(newGameMode);
+      player.resetGame();
+    }
+  }
+
   void restartGame() {
     for (Player player in players) {
       player.resetGame();
     }
   }
 
+  void resetStandard(Player resetPlayer) {
+    final resetPlayers = players.where((player) => player.playerNumber == resetPlayer.playerNumber || player.playerNumber == resetPlayer.playerNumber - 1);
+    print(resetPlayer);
+    print(resetPlayers);
+    for (var player in resetPlayers) {
+      player.resetGame();
+    }
+  }
+
   void addPlayer() {
-    players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers));
-    for(Player player in players) {
-      player.newPlayerAdded();
+    if (gameMode == "standard") {
+      // Standard is two player game, has to add two people at the time
+      players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers, gameMode: 'standard'));
+      for(Player player in players) {
+        player.newPlayerAdded();
+      }
+      players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers, gameMode: 'standard'));
+      for(Player player in players) {
+        player.newPlayerAdded();
+      }
+    } else {
+      players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers));
+      for(Player player in players) {
+        player.newPlayerAdded();
+      }
     }
     notifyListeners();
   }
 
   void removePlayer(){
-    players.removeLast();
-    for(Player player in players) {
-      player.playerRemoved();
+    if(gameMode == 'standard') {
+      players.removeLast();
+      for(Player player in players) {
+        player.playerRemoved();
+      }
+      players.removeLast();
+      for(Player player in players) {
+        player.playerRemoved();
+      }
+    }else {
+      players.removeLast();
+      for(Player player in players) {
+        player.playerRemoved();
+      }
     }
     notifyListeners();
   }
@@ -106,6 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     "default" => DefaultLayout(players: appState.players),
                     "bothEnds" => PlayersBothEndLayout(players: appState.players),
                     "oneEnd" => PlayersOneEndLayout(players: appState.players,),
+                    "standard" => StandardLayout(players: appState.players),
                     String() => throw UnimplementedError(),
                   },
               Align(
@@ -121,81 +182,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ),        
         );
       }
-    );
-  }
-}
-
-class GlobalSettings extends StatelessWidget {
-  const GlobalSettings({
-    super.key,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
-
-    return SizedBox(
-      height: 250,
-      child: Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(onPressed: appState.restartGame, icon: Icon(Icons.restart_alt_rounded), iconSize: 50,)
-              ],
-            ),
-            const SizedBox(height: 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(onPressed: appState.addPlayer, icon: Icon(Icons.add_circle_outline), iconSize: 50,),
-                SizedBox(width: 40,),
-                IconButton(onPressed: appState.removePlayer, icon: Icon(Icons.remove_circle_outline), iconSize: 50,)
-              ],
-            ),
-            SizedBox(height: 20,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.transparent,
-                    border: Border.all(
-                      color: const Color.fromARGB(255, 82, 82, 82),
-                      width: 4, 
-                    )
-                  ),
-                  child: IconButton(onPressed: () => appState.setLayout("default"), icon: Image.asset("lib/custom_icons/default_icon.png", height: 50, width: 50,), )
-                  ),
-                  const SizedBox(width: 5,),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 82, 82, 82),
-                        width: 4, 
-                      )
-                    ),
-                  child: IconButton(onPressed: () => appState.setLayout("bothEnds"), icon: Image.asset("lib/custom_icons/both_ends_icon.png", height: 50, width: 50,), )
-                  ),
-                  const SizedBox(width: 5,),
-                  Container(
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.transparent,
-                      border: Border.all(
-                        color: const Color.fromARGB(255, 82, 82, 82),
-                        width: 4, 
-                      )
-                    ),
-                  child: IconButton(onPressed: () => appState.setLayout("oneEnd"), icon: Image.asset("lib/custom_icons/one_end_icon.png", height: 50, width: 50,), )
-                  ),
-              ],
-            ),
-          ],
-      ),
     );
   }
 }

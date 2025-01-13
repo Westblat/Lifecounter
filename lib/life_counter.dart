@@ -3,8 +3,8 @@ import 'package:the_lifecounter/player.dart';
 import 'package:the_lifecounter/player_card.dart';
 import 'package:the_lifecounter/utlis.dart';
 
-class LifeCounter extends StatelessWidget {
-  const LifeCounter({
+class LifeCounter extends StatefulWidget {
+  LifeCounter({
     super.key,
     required this.widget,
     required this.player,
@@ -14,10 +14,43 @@ class LifeCounter extends StatelessWidget {
   final Player player;
 
   @override
+  State<LifeCounter> createState() => _LifeCounterState();
+}
+
+class _LifeCounterState extends State<LifeCounter> {
+  var globalKey = GlobalKey();
+  Size? lifeSize;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      setState(() {
+        newLifeSize();
+      });
+    });
+    super.initState();
+  }
+
+
+  Size getLifeSize(BuildContext context) {
+    final box = globalKey.currentContext!.findRenderObject() as RenderBox;
+    return box.size;
+  }
+
+  void newLifeSize() {
+    if (globalKey.currentContext != null) {
+      setState(() {
+        lifeSize = getLifeSize(globalKey.currentContext!);  
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    newLifeSize();
+
     return Expanded(
+      key: globalKey,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -28,35 +61,36 @@ class LifeCounter extends StatelessWidget {
                   child: Column(
                     children: [
                       SizedBox(height: 10,),
-                      if(width > 412)
+                      if(lifeSize != null && lifeSize!.height > 117 && lifeSize!.width < 400)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             MaterialButton(
                               height: 40,
                               onPressed: () {
-                                player.changeLife(-5);
+                                widget.player.changeLife(-5);
                               },
                               child: WhiteBorderText(text: "- 5", strokeWidth: 2,),
                               ),
                           ],
                         ),
+                      SizedBox(height: 20,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          if(width < 412 && height > 567)
+                          if(lifeSize != null && lifeSize!.width > 400)
                             MaterialButton(
                               minWidth: 10,
                               height: 40,
                               onPressed: () {
-                                player.changeLife(-5);
+                                widget.player.changeLife(-5);
                               },
                               child: WhiteBorderText(text: "- 5", strokeWidth: 2),
                           ),
                           MaterialButton(
                             height: 60,
                             onPressed: () {
-                              player.changeLife(-1);
+                              widget.player.changeLife(-1);
                             },
                             child: WhiteBorderText(text: "–", fontSize: 50,),
                             ),
@@ -67,10 +101,10 @@ class LifeCounter extends StatelessWidget {
                 ),
                 Column(
                   children: [
-                    player.lifeChange != 0 
-                    ? WhiteBorderText(text: "${player.lifeChange}", fontSize: 25) 
-                    : SizedBox(height: 36,),
-                    FittedBox(fit: BoxFit.fitHeight, child: WhiteBorderText(text: player.lifeAsString(), fontSize: 50, height: 0.7,)
+                    widget.player.lifeChange != 0 
+                    ? WhiteBorderText(text: "${widget.player.lifeChange}", fontSize: 25) 
+                    : SizedBox(height: 32,),
+                    FittedBox(fit: BoxFit.fitHeight, child: WhiteBorderText(text: widget.player.lifeAsString(), fontSize: 50, height: 0.7,)
                     ),
                   ],
                 ),
@@ -79,38 +113,39 @@ class LifeCounter extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       SizedBox(height: 10,),
-                      if(width > 412)
+                      if(lifeSize != null && lifeSize!.height > 117 && lifeSize!.width < 400)
                         Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             MaterialButton(
                               height: 40,
                               onPressed: () {
-                                player.changeLife(5);
+                                widget.player.changeLife(5);
                               },
                               child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
                               ),
                           ],
                         ),
+                      SizedBox(height: 20,),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           MaterialButton(
                             height: 60,
                             onPressed: () {
-                              player.changeLife(1);
+                              widget.player.changeLife(1);
                             },
                             child: WhiteBorderText(text: "+", fontSize: 50,),
                             ),
-                            if(width < 412 && height > 567)
-                                MaterialButton(
-                                  height: 40,
-                                  minWidth: 10,
-                                  onPressed: () {
-                                    player.changeLife(5);
-                                  },
-                                  child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
-                                  ),
+                          if(lifeSize != null && lifeSize!.width > 400)
+                              MaterialButton(
+                                height: 40,
+                                minWidth: 10,
+                                onPressed: () {
+                                  widget.player.changeLife(5);
+                                },
+                                child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
+                              ),
                         ],
                       ),
                     ],
