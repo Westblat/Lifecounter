@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:the_lifecounter/functions/utlis.dart';
 import 'package:the_lifecounter/main.dart';
 
 class GlobalSettings extends StatelessWidget {
@@ -43,10 +44,15 @@ class GlobalSettings extends StatelessWidget {
                         width: 4, 
                       )
                     ),
-                  child: IconButton(onPressed: () {
+                  child: MaterialButton(
+                    onPressed: () {
                       appState.setLayout("standard");
                       appState.setGameMode('standard');
-                    }, icon: Image.asset("lib/custom_icons/one_end_icon.png", height: 50, width: 50,), )
+                    }, 
+                    height: 50, 
+                    minWidth: 50,
+                    child: WhiteBorderText(text: "S", fontSize: 40,), 
+                    ), 
                   ),
             SizedBox(height: 20,),
             Row(
