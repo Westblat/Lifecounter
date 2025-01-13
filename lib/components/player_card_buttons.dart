@@ -23,17 +23,37 @@ class CustomButtonRow extends StatelessWidget {
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
         onPressed: () {player.changeLifeAllPlayers(-1);},
-        onLongPress: () {player.changeLifeAllPlayers(1);}, child: WhiteBorderText(text: "- 1 / - 1", strokeWidth: 1,)),
+        onLongPress: () {player.changeLifeAllPlayers(1);}, 
+        child: WhiteBorderText(text: "- 1 / - 1", strokeWidth: 1,)
+        ),
       "othersMinusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
         onPressed: () {player.changeLifeOthers(-1);}, 
-        onLongPress: () {player.changeLifeOthers(1);}, child: WhiteBorderText(text: "0 /- 1", strokeWidth: 1,)),
+        onLongPress: () {player.changeLifeOthers(1);}, 
+        child: WhiteBorderText(text: "0 /- 1", strokeWidth: 1,)
+        ),
       "othersMinusOnePlayerPlusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
         onPressed: () {player.changeLifeOthersAndSelf(-1, 1);}, 
-        onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, child: WhiteBorderText(text: "+ 1/ - 1",strokeWidth: 1,)),
+        onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, 
+        child: WhiteBorderText(text: "+ 1/ - 1",strokeWidth: 1,)
+        ),
+      "selfAdd5" => MaterialButton(
+        minWidth: 10,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
+        onPressed: () => player.changeLife(5),
+        onLongPress: () => player.changeLife(-5),
+        child: WhiteBorderText(text: "5", strokeWidth: 1,)
+      ),
+      "selfRemove5" => MaterialButton(
+        minWidth: 10,
+        shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
+        onPressed: () => player.changeLife(-5),
+        onLongPress: () => player.changeLife(5),
+        child: WhiteBorderText(text: "- 5", strokeWidth: 1,)
+      ),
       "poison" => PoisonButton(player: player),
       "experience" => ExperienceButton(player: player,),
       _=> throw Exception("Unrecognized button"),

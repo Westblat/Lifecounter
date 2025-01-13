@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/functions/player.dart';
 
-List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "poison", "experience"];
+List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "selfAdd5", "selfRemove5", "poison", "experience"];
 List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue", "colorless"];
 List dualBackgrounds = ["azorius", "boros", "dimir", "golgari", "gruul", "izzet", "orzhov", "rakdos", "selesnya", "simic"];
 List trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper", "abzan", "jeskai", "sultai", "mardu", "temur"];
@@ -125,6 +125,8 @@ String getButtonText(String button) {
     "allMinusOne" => "One damage to all players",
     "othersMinusOne" => "One damge to other players",
     "othersMinusOnePlayerPlusOne" => "One damage to other players, one life for you",
+    "selfAdd5" => "Add 5 life to you",
+    "selfRemove5" => "Remove 5 life from you",
     "poison" => "Poison counters",
     "experience" => "Experience counters",
     _=> button, 
