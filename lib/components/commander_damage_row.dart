@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:the_lifecounter/player.dart';
-import 'package:the_lifecounter/utlis.dart';
+import 'package:the_lifecounter/functions/player.dart';
+import 'package:the_lifecounter/functions/utlis.dart';
 
 class CommanderDamageRow extends StatelessWidget {
   const CommanderDamageRow({

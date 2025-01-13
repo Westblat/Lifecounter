@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
-import 'package:the_lifecounter/global_settings.dart';
-import 'package:the_lifecounter/player.dart';
+import 'package:the_lifecounter/components/global_settings.dart';
+import 'package:the_lifecounter/functions/player.dart';
 
-import 'layouts.dart'; 
+import 'components/layouts.dart'; 
 
 void main() {
   runApp(const MyApp());

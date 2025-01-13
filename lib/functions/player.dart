@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_lifecounter/utlis.dart';
+import 'package:the_lifecounter/functions/utlis.dart';
 import 'dart:async';
 
 class Player with ChangeNotifier {

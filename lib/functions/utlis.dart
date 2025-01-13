@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:the_lifecounter/player.dart';
+import 'package:the_lifecounter/functions/player.dart';
 
 List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "poison", "experience"];
 List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue", "colorless"];

@@ -1,7 +1,7 @@
-import 'package:the_lifecounter/player_card.dart';
-import 'package:the_lifecounter/utlis.dart';
+import 'package:the_lifecounter/components/player_card.dart';
+import 'package:the_lifecounter/functions/utlis.dart';
 import 'package:flutter/material.dart';
-import 'package:the_lifecounter/player.dart';
+import 'package:the_lifecounter/functions/player.dart';
 
 
 class CustomButtonRow extends StatelessWidget {

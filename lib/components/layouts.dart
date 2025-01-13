@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/main.dart';
-import 'package:the_lifecounter/player.dart';
+import 'package:the_lifecounter/functions/player.dart';
 import 'package:the_lifecounter/player_card.dart';
 import 'package:provider/provider.dart';
 
@@ -15,7 +15,8 @@ class HorizontalPlayerCards extends StatelessWidget {
   final List leftSide;
   final List rigthSide;
   final bool standard;
-  List<double> alignmentPoints = [-0.5, 0.5, 0,0,0,0,0,0];
+  // Locations only support 4 people, with 0s it doesn't crash with more people
+  final List<double> alignmentPoints = [-0.5, 0.5, 0,0,0,0,0,0];
 
   @override
   Widget build(BuildContext context) {    

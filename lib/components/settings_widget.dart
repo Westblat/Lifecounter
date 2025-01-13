@@ -1,5 +1,5 @@
-import 'package:the_lifecounter/utlis.dart';
-import 'package:the_lifecounter/player.dart';
+import 'package:the_lifecounter/functions/utlis.dart';
+import 'package:the_lifecounter/functions/player.dart';
 import 'package:flutter/material.dart';
 
 class SettingsWidget extends StatefulWidget {
