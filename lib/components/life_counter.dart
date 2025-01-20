@@ -87,6 +87,7 @@ class _LifeCounterState extends State<LifeCounter> {
                               },
                               child: WhiteBorderText(text: "- 5", strokeWidth: 2),
                           ),
+                          SizedBox(width: 20),
                           MaterialButton(
                             height: 60,
                             onPressed: () {
@@ -137,6 +138,7 @@ class _LifeCounterState extends State<LifeCounter> {
                             },
                             child: WhiteBorderText(text: "+", fontSize: 50,),
                             ),
+                            SizedBox(width: 20),
                           if(lifeSize != null && lifeSize!.width > 400)
                               MaterialButton(
                                 height: 40,

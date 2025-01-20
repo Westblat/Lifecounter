@@ -57,7 +57,7 @@ class CommanderDamageRow extends StatelessWidget {
                           Center(
                             child: WhiteBorderText(
                               text: player.commanderDamage[otherPlayer.playerNumber].toString(),
-                              fontSize: 20,
+                              fontSize: 35,
                               strokeWidth: 1,
                             ),
                           )
