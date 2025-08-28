@@ -44,7 +44,7 @@ class CommanderDamageRow extends StatelessWidget {
                         onLongPress: () => {player.dealCommanderDamage(1, otherPlayer)},
                         child: Container(
                           height: 48,
-                          width: 30, 
+                          width: 40, 
                           decoration: BoxDecoration(
                               image:player.icon ?  DecorationImage(
                                 opacity: 0.3,
