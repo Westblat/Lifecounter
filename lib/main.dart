@@ -4,9 +4,14 @@ import 'package:flutter/services.dart';
 import 'package:the_lifecounter/components/global_settings.dart';
 import 'package:the_lifecounter/functions/player.dart';
 
-import 'components/layouts.dart'; 
+import 'components/layouts.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
 }
 
@@ -15,10 +20,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
     return ChangeNotifierProvider(
       create: (context) => MyAppState(),
       child: MaterialApp(
@@ -49,7 +50,7 @@ class MyAppState extends ChangeNotifier {
 
 
   List<Player> getOtherPlayersCommander(Player currentPlayer) {
-    List<Player> otherPlayers = List.from(players);
+    List<Player> otherPlayers = List<Player>.from(players);
     otherPlayers.removeWhere((player) => player == currentPlayer);
     return otherPlayers;
   }
@@ -66,7 +67,7 @@ class MyAppState extends ChangeNotifier {
   }
 
 
-  late List<Player> players = [
+  late List<Player> players = <Player>[
     Player(playerNumber: 1, getOtherPlayers: getOtherPlayers),
     Player(playerNumber: 2, getOtherPlayers: getOtherPlayers),
     Player(playerNumber: 3, getOtherPlayers: getOtherPlayers),
@@ -89,8 +90,6 @@ class MyAppState extends ChangeNotifier {
 
   void resetStandard(Player resetPlayer) {
     final resetPlayers = players.where((player) => player.playerNumber == resetPlayer.playerNumber || player.playerNumber == resetPlayer.playerNumber - 1);
-    print(resetPlayer);
-    print(resetPlayers);
     for (var player in resetPlayers) {
       player.resetGame();
     }
@@ -117,6 +116,10 @@ class MyAppState extends ChangeNotifier {
   }
 
   void removePlayer(){
+    final minPlayers = gameMode == 'standard' ? 2 : 1;
+    if (players.length <= minPlayers) {
+      return;
+    }
     if(gameMode == 'standard') {
       players.removeLast();
       for(Player player in players) {

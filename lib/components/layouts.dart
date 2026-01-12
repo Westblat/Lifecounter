@@ -12,8 +12,8 @@ class HorizontalPlayerCards extends StatelessWidget {
     this.standard = false,
   });
 
-  final List leftSide;
-  final List rigthSide;
+  final List<Player> leftSide;
+  final List<Player> rigthSide;
   final bool standard;
   // Locations only support 4 people, with 0s it doesn't crash with more people
   final List<double> alignmentPoints = [-0.5, 0.5, 0,0,0,0,0,0];
@@ -81,8 +81,8 @@ class DefaultLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var leftSide = [];
-    var rigthSide = [];
+    List<Player> leftSide = [];
+    List<Player> rigthSide = [];
 
     for(Player player in players) {
       if(player.playerNumber % 2 == 0) {leftSide.add(player);}
@@ -104,8 +104,8 @@ class PlayersBothEndLayout extends StatelessWidget {
     int verticalPlayerCount = (((players.length -2 ) / 2)).ceil() + 2;
     double height = (MediaQuery.of(context).size.height - 34) / verticalPlayerCount;
 
-    var leftSide = [];
-    var rigthSide = [];
+    List<Player> leftSide = [];
+    List<Player> rigthSide = [];
     
     for(Player player in players) {
       if(player.playerNumber == 1 || player.playerNumber == 2) {}
@@ -148,8 +148,8 @@ class PlayersOneEndLayout extends StatelessWidget {
     int verticalPlayerCount = (((players.length - 1 ) / 2)).ceil() + 2;
     double height = MediaQuery.of(context).size.height / verticalPlayerCount;
 
-    var leftSide = [];
-    var rigthSide = [];
+    List<Player> leftSide = [];
+    List<Player> rigthSide = [];
 
     for(Player player in players) {
       if(player.playerNumber == 1 ) {}
@@ -185,8 +185,8 @@ class StandardLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var leftSide = [];
-    var rigthSide = [];
+    List<Player> leftSide = [];
+    List<Player> rigthSide = [];
     double height = (MediaQuery.of(context).size.height - 34) / 2;
 
     for(Player player in players) {

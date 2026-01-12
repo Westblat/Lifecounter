@@ -23,7 +23,7 @@ class PlayerCard extends StatefulWidget {
 
 class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMixin {
   var settings = false;
-  List selectedButtons = ["othersMinusOne"];
+  List<String> selectedButtons = ["othersMinusOne"];
   late Player _player = widget.player;
   late AnimationController _animationController;
 

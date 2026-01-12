@@ -10,7 +10,7 @@ class Player with ChangeNotifier {
   });
 
   final int playerNumber;
-  final Function getOtherPlayers;
+  final List<Player> Function(Player) getOtherPlayers;
 
   String gameMode;
   late int life = gameMode == 'standard' ? 20 : 40;
@@ -18,7 +18,7 @@ class Player with ChangeNotifier {
   int lifeChange = 0;
   Timer? timer;
   late List<Player> otherPlayers = getOtherPlayers(this);
-  late Map commanderDamage = initCommanderDamage();
+  late Map<int, int> commanderDamage = initCommanderDamage();
   int poison = 0;
   int experience = 0;
   bool icon = true;
@@ -30,8 +30,8 @@ class Player with ChangeNotifier {
   }
 
 
-  Map initCommanderDamage() {
-    Map emptyCommanderDamages = {};
+  Map<int, int> initCommanderDamage() {
+    Map<int, int> emptyCommanderDamages = {};
     for (Player player in otherPlayers) {
         emptyCommanderDamages[player.playerNumber] = 0;
     }
@@ -80,11 +80,11 @@ class Player with ChangeNotifier {
 
   void dealCommanderDamage(int damage, Player targetPlayer) {
     changeLife(damage);
-    commanderDamage[targetPlayer.playerNumber] = commanderDamage[targetPlayer.playerNumber] + -damage;
+    commanderDamage[targetPlayer.playerNumber] = commanderDamage[targetPlayer.playerNumber]! + -damage;
     notifyListeners();
   }
 
-  void changeLifeAllPlayers(life) {
+  void changeLifeAllPlayers(int life) {
     changeLife(life);
     for (Player player in otherPlayers) {
       player.changeLife(life);
@@ -106,13 +106,17 @@ class Player with ChangeNotifier {
 
   void newPlayerAdded() {
     otherPlayers = getOtherPlayers(this);
-    if(gameMode == 'commander') commanderDamage[otherPlayers.last.playerNumber] = 0;
+    if (gameMode == 'commander') {
+      commanderDamage = initCommanderDamage();
+    }
     notifyListeners();
   }
 
   void playerRemoved() {
     otherPlayers = getOtherPlayers(this);
-    if(gameMode == 'commander') commanderDamage.remove(otherPlayers.last.playerNumber + 1);
+    if (gameMode == 'commander') {
+      commanderDamage = initCommanderDamage();
+    }
     notifyListeners();
   }
 

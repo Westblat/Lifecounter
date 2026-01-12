@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/functions/player.dart';
 
-List allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "selfAdd5", "selfRemove5", "poison", "experience"];
-List monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue", "colorless"];
-List dualBackgrounds = ["azorius", "boros", "dimir", "golgari", "gruul", "izzet", "orzhov", "rakdos", "selesnya", "simic"];
-List trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper", "abzan", "jeskai", "sultai", "mardu", "temur"];
+List<String> allButtons = ["allMinusOne", "othersMinusOne", "othersMinusOnePlayerPlusOne", "selfAdd5", "selfRemove5", "poison", "experience"];
+List<String> monoBackgrounds = ["monored", "monogreen", "monoblack", "monowhite", "monoblue", "colorless"];
+List<String> dualBackgrounds = ["azorius", "boros", "dimir", "golgari", "gruul", "izzet", "orzhov", "rakdos", "selesnya", "simic"];
+List<String> trioBackgrounds = ["grixis", "jund", "bant", "naya", "esper", "abzan", "jeskai", "sultai", "mardu", "temur"];
 
 String getImage(String image){
   return switch(image) {

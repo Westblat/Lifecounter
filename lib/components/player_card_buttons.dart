@@ -12,7 +12,7 @@ class CustomButtonRow extends StatelessWidget {
     required this.selectedButtons,
   });
 
-  final List selectedButtons;
+  final List<String> selectedButtons;
   final PlayerCard widget;
   final Player player;
 
