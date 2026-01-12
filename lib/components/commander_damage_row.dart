@@ -14,7 +14,10 @@ class CommanderDamageRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(gameStateProvider);
-    final player = state.players.firstWhere((p) => p.playerNumber == playerNumber);
+    final matching =
+        state.players.where((p) => p.playerNumber == playerNumber).toList();
+    if (matching.isEmpty) return const SizedBox.shrink();
+    final player = matching.first;
     final order = orderedOpponents(state, playerNumber);
 
     return Column(

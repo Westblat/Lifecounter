@@ -72,6 +72,7 @@ class _PlayerCardState extends ConsumerState<PlayerCard>
   @override
   Widget build(BuildContext context) {
     final player = ref.watch(playerProvider(widget.playerNumber));
+    if (player == null) return const SizedBox.shrink();
     double width = MediaQuery.of(context).size.width;
     return DecoratedBox(
       decoration: getDecoration(player),

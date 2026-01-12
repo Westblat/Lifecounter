@@ -112,6 +112,7 @@ class BackgroundWidget extends ConsumerWidget {
   @override
   Widget build (BuildContext context, WidgetRef ref) {
   final player = ref.watch(playerProvider(playerNumber));
+  if (player == null) return const SizedBox.shrink();
   return ListView(
     scrollDirection: Axis.vertical,
     children: [

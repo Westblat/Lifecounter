@@ -42,9 +42,9 @@ class GameState {
 final gameStateProvider =
     StateNotifierProvider<GameNotifier, GameState>((ref) => GameNotifier());
 
-final playerProvider = Provider.family<Player, int>((ref, playerNumber) {
+final playerProvider = Provider.family<Player?, int>((ref, playerNumber) {
   final players = ref.watch(gameStateProvider).players;
-  return players.firstWhere((p) => p.playerNumber == playerNumber);
+  return _findPlayer(players, playerNumber);
 });
 
 final playersProvider =
@@ -59,7 +59,8 @@ class GameNotifier extends StateNotifier<GameState> {
     state = state.copyWith(layout: layout);
   }
 
-  void setGameMode(String newGameMode) {
+  void setGameMode(String newGameMode, {bool force = false}) {
+    if (!force && newGameMode == state.gameMode) return;
     _clearLifeChangeTimers();
     final playerNumbers = _playerNumbers(state.players);
     final updatedPlayers = state.players
@@ -74,7 +75,7 @@ class GameNotifier extends StateNotifier<GameState> {
   }
 
   void restartGame() {
-    setGameMode(state.gameMode);
+    setGameMode(state.gameMode, force: true);
   }
 
   void addPlayer() {
@@ -294,6 +295,13 @@ List<Player> _buildPlayers({
 
 List<int> _playerNumbers(List<Player> players) =>
     players.map((p) => p.playerNumber).toList();
+
+Player? _findPlayer(List<Player> players, int playerNumber) {
+  for (final player in players) {
+    if (player.playerNumber == playerNumber) return player;
+  }
+  return null;
+}
 
 List<int> _otherPlayerNumbers(GameState state, int playerNumber) {
   if (state.gameMode == 'standard') {
