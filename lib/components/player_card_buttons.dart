@@ -1,57 +1,56 @@
-import 'package:the_lifecounter/components/player_card.dart';
 import 'package:the_lifecounter/functions/utlis.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/player.dart';
+import 'package:the_lifecounter/state/game_state.dart';
 
 
-class CustomButtonRow extends StatelessWidget {
+class CustomButtonRow extends ConsumerWidget {
   const CustomButtonRow({
     super.key,
-    required this.widget,
     required this.player,
     required this.selectedButtons,
   });
 
   final List<String> selectedButtons;
-  final PlayerCard widget;
   final Player player;
 
 
-  Widget getButton(String button, Player player){
+  Widget getButton(String button, Player player, WidgetRef ref){
     return switch(button) {
       "allMinusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () {player.changeLifeAllPlayers(-1);},
-        onLongPress: () {player.changeLifeAllPlayers(1);}, 
+        onPressed: () {ref.read(gameStateProvider.notifier).changeLifeAllPlayers(-1);},
+        onLongPress: () {ref.read(gameStateProvider.notifier).changeLifeAllPlayers(1);}, 
         child: WhiteBorderText(text: "- 1 / - 1", strokeWidth: 1,)
         ),
       "othersMinusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () {player.changeLifeOthers(-1);}, 
-        onLongPress: () {player.changeLifeOthers(1);}, 
+        onPressed: () {ref.read(gameStateProvider.notifier).changeLifeOthers(player.playerNumber, -1);}, 
+        onLongPress: () {ref.read(gameStateProvider.notifier).changeLifeOthers(player.playerNumber, 1);}, 
         child: WhiteBorderText(text: "0 /- 1", strokeWidth: 1,)
         ),
       "othersMinusOnePlayerPlusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () {player.changeLifeOthersAndSelf(-1, 1);}, 
-        onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, 
+        onPressed: () {ref.read(gameStateProvider.notifier).changeLifeOthersAndSelf(playerNumber: player.playerNumber, othersDelta: -1, selfDelta: 1);}, 
+        onLongPress: () {ref.read(gameStateProvider.notifier).changeLifeOthersAndSelf(playerNumber: player.playerNumber, othersDelta: 1, selfDelta: -1);}, 
         child: WhiteBorderText(text: "+ 1/ - 1",strokeWidth: 1,)
         ),
       "selfAdd5" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () => player.changeLife(5),
-        onLongPress: () => player.changeLife(-5),
+        onPressed: () => ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, 5),
+        onLongPress: () => ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, -5),
         child: WhiteBorderText(text: "5", strokeWidth: 1,)
       ),
       "selfRemove5" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () => player.changeLife(-5),
-        onLongPress: () => player.changeLife(5),
+        onPressed: () => ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, -5),
+        onLongPress: () => ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, 5),
         child: WhiteBorderText(text: "- 5", strokeWidth: 1,)
       ),
       "poison" => PoisonButton(player: player),
@@ -61,12 +60,12 @@ class CustomButtonRow extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         for (String button in selectedButtons)
-          getButton(button, player),
+          getButton(button, player, ref),
         if(selectedButtons.isEmpty) SizedBox(height: 45,)
       ],
           
@@ -74,7 +73,7 @@ class CustomButtonRow extends StatelessWidget {
   }
 }
 
-class PoisonButton extends StatelessWidget {
+class PoisonButton extends ConsumerWidget {
   PoisonButton({
     super.key,
     required this.player,
@@ -82,12 +81,12 @@ class PoisonButton extends StatelessWidget {
   final Player player;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialButton(
       minWidth: 10,
       shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
-      onPressed: () => {player.changePoison(1)},
-      onLongPress: () => {player.changePoison(-1)},
+      onPressed: () => {ref.read(gameStateProvider.notifier).changePoison(player.playerNumber, 1)},
+      onLongPress: () => {ref.read(gameStateProvider.notifier).changePoison(player.playerNumber, -1)},
         child: 
         Container(
           height: 30,
@@ -109,7 +108,7 @@ class PoisonButton extends StatelessWidget {
   }
 }
 
-class ExperienceButton extends StatelessWidget {
+class ExperienceButton extends ConsumerWidget {
   ExperienceButton({
     super.key,
     required this.player,
@@ -117,10 +116,10 @@ class ExperienceButton extends StatelessWidget {
   final Player player;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialButton(
-      onPressed: () => {player.changeExperience(1)},
-      onLongPress: () => {player.changeExperience(-1)},
+      onPressed: () => {ref.read(gameStateProvider.notifier).changeExperience(player.playerNumber, 1)},
+      onLongPress: () => {ref.read(gameStateProvider.notifier).changeExperience(player.playerNumber, -1)},
       minWidth: 10,
       shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
         child: Container(

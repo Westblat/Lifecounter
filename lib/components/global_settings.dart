@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/utlis.dart';
-import 'package:the_lifecounter/main.dart';
+import 'package:the_lifecounter/state/game_state.dart';
 
-class GlobalSettings extends StatelessWidget {
+class GlobalSettings extends ConsumerWidget {
   const GlobalSettings({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.read(gameStateProvider.notifier);
     double height = MediaQuery.of(context).size.height;
     
     return SizedBox(
@@ -22,16 +22,16 @@ class GlobalSettings extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              IconButton(onPressed: appState.restartGame, icon: Icon(Icons.restart_alt_rounded), iconSize: 50,)
+              IconButton(onPressed: controller.restartGame, icon: Icon(Icons.restart_alt_rounded), iconSize: 50,)
               ],
             ),
             const SizedBox(height: 10,),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                IconButton(onPressed: appState.addPlayer, icon: Icon(Icons.add_circle_outline), iconSize: 50,),
+                IconButton(onPressed: controller.addPlayer, icon: Icon(Icons.add_circle_outline), iconSize: 50,),
                 SizedBox(width: 40,),
-                IconButton(onPressed: appState.removePlayer, icon: Icon(Icons.remove_circle_outline), iconSize: 50,)
+                IconButton(onPressed: controller.removePlayer, icon: Icon(Icons.remove_circle_outline), iconSize: 50,)
               ],
             ),
             SizedBox(height: 20,),
@@ -46,8 +46,8 @@ class GlobalSettings extends StatelessWidget {
                     ),
                   child: MaterialButton(
                     onPressed: () {
-                      appState.setLayout("standard");
-                      appState.setGameMode('standard');
+                      controller.setLayout("standard");
+                      controller.setGameMode('standard');
                     }, 
                     height: 50, 
                     minWidth: 50,
@@ -68,8 +68,8 @@ class GlobalSettings extends StatelessWidget {
                     )
                   ),
                   child: IconButton(onPressed: () {
-                      appState.setGameMode('commander'); 
-                      appState.setLayout("default");
+                      controller.setGameMode('commander'); 
+                      controller.setLayout("default");
                     }, icon: Image.asset("lib/custom_icons/default_icon.png", height: 50, width: 50,), )
                   ),
                   const SizedBox(width: 5,),
@@ -83,8 +83,8 @@ class GlobalSettings extends StatelessWidget {
                       )
                     ),
                   child: IconButton(onPressed: () {
-                    appState.setGameMode('commander');
-                    appState.setLayout("bothEnds");
+                    controller.setGameMode('commander');
+                    controller.setLayout("bothEnds");
                   }, icon: Image.asset("lib/custom_icons/both_ends_icon.png", height: 50, width: 50,), )
                   ),
                   const SizedBox(width: 5,),
@@ -98,8 +98,8 @@ class GlobalSettings extends StatelessWidget {
                       )
                     ),
                   child: IconButton(onPressed: () {
-                    appState.setGameMode('commander');
-                    appState.setLayout("oneEnd");
+                    controller.setGameMode('commander');
+                    controller.setLayout("oneEnd");
                   }, icon: Image.asset("lib/custom_icons/one_end_icon.png", height: 50, width: 50,), )
                   ),
               ],

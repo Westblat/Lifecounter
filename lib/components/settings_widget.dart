@@ -1,24 +1,25 @@
 import 'package:the_lifecounter/functions/utlis.dart';
-import 'package:the_lifecounter/functions/player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:the_lifecounter/state/game_state.dart';
 
-class SettingsWidget extends StatefulWidget {
+class SettingsWidget extends ConsumerStatefulWidget {
   const SettingsWidget({
     super.key,
     required this.setButtons,
     required this.selectedButtons,
-    required this.player,
+    required this.playerNumber,
     });
   
   final Function setButtons;
   final List selectedButtons;
-  final Player player;
+  final int playerNumber;
 
   @override
-  State<SettingsWidget> createState() => _SettingsWidgetState();
+  ConsumerState<SettingsWidget> createState() => _SettingsWidgetState();
 }
 
-class _SettingsWidgetState extends State<SettingsWidget>  with SingleTickerProviderStateMixin{
+class _SettingsWidgetState extends ConsumerState<SettingsWidget>  with SingleTickerProviderStateMixin{
   var showBackground = false;
 
   void toggleBackgroundSelection() {
@@ -67,7 +68,7 @@ class _SettingsWidgetState extends State<SettingsWidget>  with SingleTickerProvi
       ? 
         AnimatedBuilder(
           animation: _animationController,
-          child: BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, player: widget.player),
+          child: BackgroundWidget(toggleBackgroundSelection: toggleBackgroundSelection, playerNumber: widget.playerNumber),
           builder: (context, child) => 
             SlideTransition(
               position: 
@@ -98,24 +99,25 @@ class _SettingsWidgetState extends State<SettingsWidget>  with SingleTickerProvi
   }
 }
 
-class BackgroundWidget extends StatelessWidget {
+class BackgroundWidget extends ConsumerWidget {
   BackgroundWidget({
     super.key,
     required this.toggleBackgroundSelection,
-    required this.player,
+    required this.playerNumber,
     });
   
   final Function toggleBackgroundSelection;
-  final Player player;
+  final int playerNumber;
 
   @override
-  Widget build (BuildContext context) {
+  Widget build (BuildContext context, WidgetRef ref) {
+  final player = ref.watch(playerProvider(playerNumber));
   return ListView(
     scrollDirection: Axis.vertical,
     children: [
       ElevatedButton(onPressed: () => toggleBackgroundSelection(), child: Text("Close")),
-      CheckboxListTile(title: Text("Show player icons"),value: player.icon, onChanged:  (_) => player.toggleIcon()),
-      CheckboxListTile(title: Text("Blurred background"),value: player.blur, onChanged:  (_) => player.toggleBlur()),
+      CheckboxListTile(title: Text("Show player icons"),value: player.icon, onChanged:  (_) => ref.read(gameStateProvider.notifier).toggleIcon(player.playerNumber)),
+      CheckboxListTile(title: Text("Blurred background"),value: player.blur, onChanged:  (_) => ref.read(gameStateProvider.notifier).toggleBlur(player.playerNumber)),
       SizedBox(
         height: 50,
         child: ListView(
@@ -128,7 +130,7 @@ class BackgroundWidget extends StatelessWidget {
                 child: SizedBox(
                   height: 50,
                   width: 50,
-                  child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+                  child: IconButton(onPressed: () => ref.read(gameStateProvider.notifier).changeBackground(player.playerNumber, button), icon: Image.asset(getImage(button)),),
                 ),
               )  
             ]
@@ -147,7 +149,7 @@ class BackgroundWidget extends StatelessWidget {
                 child: SizedBox(
                   height: 50,
                   width: 50,
-                  child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+                  child: IconButton(onPressed: () => ref.read(gameStateProvider.notifier).changeBackground(player.playerNumber, button), icon: Image.asset(getImage(button)),),
                 ),
               )  
             ]
@@ -166,7 +168,7 @@ class BackgroundWidget extends StatelessWidget {
                 child: SizedBox(
                   height: 50,
                   width: 50,
-                  child: IconButton(onPressed: () => player.changeBackground(button), icon: Image.asset(getImage(button)),),
+                  child: IconButton(onPressed: () => ref.read(gameStateProvider.notifier).changeBackground(player.playerNumber, button), icon: Image.asset(getImage(button)),),
                 ),
               )  
             ]

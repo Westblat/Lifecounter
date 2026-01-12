@@ -1,30 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/utlis.dart';
-import 'package:the_lifecounter/functions/player.dart';
+import 'package:the_lifecounter/state/game_state.dart';
 
 import 'commander_damage_row.dart';
 import 'life_counter.dart';
 import 'player_card_buttons.dart';
 import 'settings_widget.dart';
 
-
-class PlayerCard extends StatefulWidget {
+class PlayerCard extends ConsumerStatefulWidget {
   const PlayerCard({
     super.key,
-    required this.player,
+    required this.playerNumber,
     this.standard = false,
   });
-  final Player player;
+  final int playerNumber;
   final bool standard;
 
   @override
-  State<PlayerCard> createState() => _PlayerCardState();
+  ConsumerState<PlayerCard> createState() => _PlayerCardState();
 }
 
-class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateMixin {
+class _PlayerCardState extends ConsumerState<PlayerCard>
+    with SingleTickerProviderStateMixin {
   var settings = false;
   List<String> selectedButtons = ["othersMinusOne"];
-  late Player _player = widget.player;
   late AnimationController _animationController;
 
   @override
@@ -71,49 +71,57 @@ class _PlayerCardState extends State<PlayerCard> with SingleTickerProviderStateM
 
   @override
   Widget build(BuildContext context) {
+    final player = ref.watch(playerProvider(widget.playerNumber));
     double width = MediaQuery.of(context).size.width;
-    return ListenableBuilder(
-      listenable: _player,
-      builder: (context, child) {
-      return DecoratedBox(
-        decoration: getDecoration(_player),
-        child: Container(
-            padding: EdgeInsets.only(bottom: 10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.blueGrey)
-              ),
-            child: Stack(
-              children: [
-                if (settings) AnimatedBuilder(
+    return DecoratedBox(
+      decoration: getDecoration(player),
+      child: Container(
+        padding: EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(border: Border.all(color: Colors.blueGrey)),
+        child: Stack(
+          children: [
+            if (settings)
+              AnimatedBuilder(
                   animation: _animationController,
                   child: SettingsWidget(
-                    selectedButtons: selectedButtons, 
-                    setButtons: setButtons, 
-                    player: _player,
+                    selectedButtons: selectedButtons,
+                    setButtons: setButtons,
+                    playerNumber: player.playerNumber,
+                  ),
+                  builder: (context, child) => SlideTransition(
+                        position: Tween(
+                          begin: const Offset(0, 1),
+                          end: const Offset(0, 0),
+                        ).animate(CurvedAnimation(
+                            parent: _animationController,
+                            curve: Curves.easeInOut)),
+                        child: child,
+                      ))
+            else
+              Column(
+                children: [
+                  if (!widget.standard)
+                    CommanderDamageRow(playerNumber: player.playerNumber),
+                  Expanded(
+                    child: LifeCounter(
+                      player: player,
                     ),
-                    builder: (context, child) => SlideTransition(
-                      position: 
-                      Tween(
-                        begin: const Offset(0, 1), 
-                        end: const Offset(0, 0)
-                      ).animate(CurvedAnimation(parent: _animationController, curve: Curves.easeInOut)), 
-                  child: child,)
-                ) else Column(
-                    children: [
-                      if(!widget.standard) CommanderDamageRow(player: _player),
-                      LifeCounter(widget: widget, player: _player,),
-                      if(width > 289) CustomButtonRow(widget: widget, player: _player, selectedButtons: selectedButtons),
-                    ],
                   ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: IconButton(icon: Icon(Icons.more_vert), onPressed: toggleSettings,)
-                  ),
-              ],
-            ),
+                  if (width > 289)
+                    CustomButtonRow(
+                        player: player,
+                        selectedButtons: selectedButtons),
+                ],
+              ),
+            Align(
+                alignment: Alignment.bottomLeft,
+                child: IconButton(
+                  icon: Icon(Icons.more_vert),
+                  onPressed: toggleSettings,
+                )),
+          ],
         ),
-      );
-      }
+      ),
     );
   }
 }

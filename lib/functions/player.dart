@@ -1,169 +1,134 @@
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/functions/utlis.dart';
-import 'dart:async';
 
-class Player with ChangeNotifier {
-  Player({
+@immutable
+class Player {
+  const Player({
     required this.playerNumber,
-    required this.getOtherPlayers,
-    this.gameMode = 'commander',
+    required this.life,
+    required this.background,
+    this.lifeChange = 0,
+    this.commanderDamage = const {},
+    this.poison = 0,
+    this.experience = 0,
+    this.icon = true,
+    this.blur = false,
   });
 
   final int playerNumber;
-  final List<Player> Function(Player) getOtherPlayers;
+  final int life;
+  final String background;
+  final int lifeChange;
+  final Map<int, int> commanderDamage;
+  final int poison;
+  final int experience;
+  final bool icon;
+  final bool blur;
 
-  String gameMode;
-  late int life = gameMode == 'standard' ? 20 : 40;
-  late String background = monoBackgrounds[playerNumber % monoBackgrounds.length];
-  int lifeChange = 0;
-  Timer? timer;
-  late List<Player> otherPlayers = getOtherPlayers(this);
-  late Map<int, int> commanderDamage = initCommanderDamage();
-  int poison = 0;
-  int experience = 0;
-  bool icon = true;
-  bool blur = false;
+  Player copyWith({
+    int? life,
+    String? background,
+    int? lifeChange,
+    Map<int, int>? commanderDamage,
+    int? poison,
+    int? experience,
+    bool? icon,
+    bool? blur,
+  }) {
+    return Player(
+      playerNumber: playerNumber,
+      life: life ?? this.life,
+      background: background ?? this.background,
+      lifeChange: lifeChange ?? this.lifeChange,
+      commanderDamage: commanderDamage ?? this.commanderDamage,
+      poison: poison ?? this.poison,
+      experience: experience ?? this.experience,
+      icon: icon ?? this.icon,
+      blur: blur ?? this.blur,
+    );
+  }
+
+  Player resetForMode(String gameMode, List<int> allPlayerNumbers) {
+    final commanderDamageMap = gameMode == 'commander'
+        ? emptyCommanderDamageFor(playerNumber, allPlayerNumbers)
+        : const <int, int>{};
+    return copyWith(
+      life: gameMode == 'standard' ? 20 : 40,
+      lifeChange: 0,
+      poison: 0,
+      experience: 0,
+      commanderDamage: commanderDamageMap,
+    );
+  }
+
+  Player resetStandardPair(String gameMode) {
+    if (gameMode != 'standard') return this;
+    return copyWith(
+      life: 20,
+      lifeChange: 0,
+      poison: 0,
+      experience: 0,
+      commanderDamage: const {},
+    );
+  }
+
+  static Player initial({
+    required int playerNumber,
+    required String gameMode,
+    required List<int> allPlayerNumbers,
+  }) {
+    return Player(
+      playerNumber: playerNumber,
+      life: gameMode == 'standard' ? 20 : 40,
+      background: monoBackgrounds[playerNumber % monoBackgrounds.length],
+      lifeChange: 0,
+      commanderDamage: gameMode == 'commander'
+          ? emptyCommanderDamageFor(playerNumber, allPlayerNumbers)
+          : const <int, int>{},
+      poison: 0,
+      experience: 0,
+    );
+  }
 
   @override
-  String toString() {
-    return "Player number $playerNumber $background";
+  int get hashCode =>
+      Object.hash(playerNumber, life, background, lifeChange, poison, experience, icon, blur, commanderDamageHash);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is Player &&
+        other.playerNumber == playerNumber &&
+        other.life == life &&
+        other.background == background &&
+        other.lifeChange == lifeChange &&
+        other.poison == poison &&
+        other.experience == experience &&
+        other.icon == icon &&
+        other.blur == blur &&
+        _mapEquals(other.commanderDamage, commanderDamage);
   }
 
+  int get commanderDamageHash {
+    int hash = 0;
+    commanderDamage.forEach((key, value) {
+      hash = Object.hash(hash, key, value);
+    });
+    return hash;
+  }
+}
 
-  Map<int, int> initCommanderDamage() {
-    Map<int, int> emptyCommanderDamages = {};
-    for (Player player in otherPlayers) {
-        emptyCommanderDamages[player.playerNumber] = 0;
-    }
-    return emptyCommanderDamages;
-  }
-  
-  void setTimer() {
-    if (timer != null) timer?.cancel();
-    timer = Timer(Duration(seconds: 3), () {
-        lifeChange = 0;
-        notifyListeners();
-      });
-  }
+Map<int, int> emptyCommanderDamageFor(int playerNumber, List<int> allPlayerNumbers) {
+  return {
+    for (final number in allPlayerNumbers)
+      if (number != playerNumber) number: 0,
+  };
+}
 
-  void changeLife(int damage) {
-      life += damage;
-      lifeChange += damage;
-      notifyListeners();
-      setTimer();
+bool _mapEquals(Map<int, int> a, Map<int, int> b) {
+  if (a.length != b.length) return false;
+  for (final entry in a.entries) {
+    if (b[entry.key] != entry.value) return false;
   }
-
-  void changeBackground(String newBackground) {
-    background = newBackground;
-    notifyListeners();
-  }
-
-  void resetGame() {
-    print(gameMode);
-    if(gameMode == 'commander') life = 40;
-    if(gameMode == 'standard') life = 20;
-    poison = 0;
-    experience = 0;
-    commanderDamage = initCommanderDamage();
-    notifyListeners();
-  }
-
-  void setGameMode(String targetGameMode) {
-    gameMode = targetGameMode;
-    otherPlayers = getOtherPlayers(this);
-    notifyListeners();
-  }
-
-  String lifeAsString () {
-    return life.toString();
-  }
-
-  void dealCommanderDamage(int damage, Player targetPlayer) {
-    changeLife(damage);
-    commanderDamage[targetPlayer.playerNumber] = commanderDamage[targetPlayer.playerNumber]! + -damage;
-    notifyListeners();
-  }
-
-  void changeLifeAllPlayers(int life) {
-    changeLife(life);
-    for (Player player in otherPlayers) {
-      player.changeLife(life);
-    }
-  }
-
-  void changeLifeOthers(int life) {
-    for (Player player in otherPlayers) {
-      player.changeLife(life);
-    }
-  }
-
-  void changeLifeOthersAndSelf(int othersLife, int selfLife) {
-    changeLife(selfLife);
-    for (Player player in otherPlayers) {
-      player.changeLife(othersLife);
-    }
-  }
-
-  void newPlayerAdded() {
-    otherPlayers = getOtherPlayers(this);
-    if (gameMode == 'commander') {
-      commanderDamage = initCommanderDamage();
-    }
-    notifyListeners();
-  }
-
-  void playerRemoved() {
-    otherPlayers = getOtherPlayers(this);
-    if (gameMode == 'commander') {
-      commanderDamage = initCommanderDamage();
-    }
-    notifyListeners();
-  }
-
-  List<Player> getAllPlayers() {
-    List<Player> allPlayers = List.from(otherPlayers);
-    allPlayers.add(this);
-    allPlayers.sort((a, b) => Comparable.compare(a.playerNumber, b.playerNumber));
-    return allPlayers;
-  }
-
-  List<int> getPlayerOrder() {
-    List<int> evenPlayers = [];
-    List<int> oddPLayers = [];
-
-    for (Player player in getAllPlayers()) {
-      if(player.playerNumber % 2 == 0) {
-        evenPlayers.add(player.playerNumber);
-      } else {
-        oddPLayers.add(player.playerNumber);
-      }
-    }
-    return oddPLayers + evenPlayers.reversed.toList();
-  }
-
-  List<int> yourPlayerOrder() {
-    var order = getPlayerOrder();
-    int yourPlace = order.indexOf(playerNumber);
-    return order.sublist(yourPlace + 1) + order.sublist(0,yourPlace);
-  }
-
-  void changePoison(int newPoison) {
-    poison += newPoison;
-    notifyListeners();
-  }
-  
-  void changeExperience(int newExperience) {
-    experience += newExperience;
-    notifyListeners();
-  }
-
-  void toggleIcon() {
-    icon = !icon;
-    notifyListeners();
-  }
-
-  void toggleBlur() {
-    blur = !blur;
-    notifyListeners();
-  }
+  return true;
 }
