@@ -46,6 +46,7 @@ class MyHomePage extends ConsumerStatefulWidget {
   ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
+
 class _MyHomePageState extends ConsumerState<MyHomePage> {
   late bool globalSettingsVisible = widget.showSettingsInitially;
   bool hostPopupVisible = false;
