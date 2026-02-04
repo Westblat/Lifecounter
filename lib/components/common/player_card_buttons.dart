@@ -1,61 +1,68 @@
-import 'package:the_lifecounter/components/player_card.dart';
-import 'package:the_lifecounter/functions/utlis.dart';
 import 'package:flutter/material.dart';
 import 'package:the_lifecounter/functions/player.dart';
-
+import 'package:the_lifecounter/functions/utlis.dart';
 
 class CustomButtonRow extends StatelessWidget {
   const CustomButtonRow({
     super.key,
-    required this.widget,
     required this.player,
     required this.selectedButtons,
+    required this.onChangeLife,
+    required this.onChangeLifeAllPlayers,
+    required this.onChangeLifeOthers,
+    required this.onChangeLifeOthersAndSelf,
+    required this.onChangePoison,
+    required this.onChangeExperience,
   });
 
   final List<String> selectedButtons;
-  final PlayerCard widget;
   final Player player;
-
+  final void Function(int delta) onChangeLife;
+  final void Function(int delta) onChangeLifeAllPlayers;
+  final void Function(int delta) onChangeLifeOthers;
+  final void Function(int othersDelta, int selfDelta) onChangeLifeOthersAndSelf;
+  final void Function(int delta) onChangePoison;
+  final void Function(int delta) onChangeExperience;
 
   Widget getButton(String button, Player player){
     return switch(button) {
       "allMinusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () {player.changeLifeAllPlayers(-1);},
-        onLongPress: () {player.changeLifeAllPlayers(1);}, 
+        onPressed: () {onChangeLifeAllPlayers(-1);},
+        onLongPress: () {onChangeLifeAllPlayers(1);}, 
         child: WhiteBorderText(text: "- 1 / - 1", strokeWidth: 1,)
         ),
       "othersMinusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () {player.changeLifeOthers(-1);}, 
-        onLongPress: () {player.changeLifeOthers(1);}, 
+        onPressed: () {onChangeLifeOthers(-1);}, 
+        onLongPress: () {onChangeLifeOthers(1);}, 
         child: WhiteBorderText(text: "0 /- 1", strokeWidth: 1,)
         ),
       "othersMinusOnePlayerPlusOne" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () {player.changeLifeOthersAndSelf(-1, 1);}, 
-        onLongPress: () {player.changeLifeOthersAndSelf(1, -1);}, 
+        onPressed: () {onChangeLifeOthersAndSelf(-1, 1);}, 
+        onLongPress: () {onChangeLifeOthersAndSelf(1, -1);}, 
         child: WhiteBorderText(text: "+ 1/ - 1",strokeWidth: 1,)
         ),
       "selfAdd5" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () => player.changeLife(5),
-        onLongPress: () => player.changeLife(-5),
+        onPressed: () => onChangeLife(5),
+        onLongPress: () => onChangeLife(-5),
         child: WhiteBorderText(text: "5", strokeWidth: 1,)
       ),
       "selfRemove5" => MaterialButton(
         minWidth: 10,
         shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0), side: BorderSide(color: Colors.black,) ),
-        onPressed: () => player.changeLife(-5),
-        onLongPress: () => player.changeLife(5),
+        onPressed: () => onChangeLife(-5),
+        onLongPress: () => onChangeLife(5),
         child: WhiteBorderText(text: "- 5", strokeWidth: 1,)
       ),
-      "poison" => PoisonButton(player: player),
-      "experience" => ExperienceButton(player: player,),
+      "poison" => PoisonButton(player: player, onChangePoison: onChangePoison,),
+      "experience" => ExperienceButton(player: player, onChangeExperience: onChangeExperience,),
       _=> throw Exception("Unrecognized button"),
     };
   }
@@ -78,16 +85,18 @@ class PoisonButton extends StatelessWidget {
   PoisonButton({
     super.key,
     required this.player,
+    required this.onChangePoison,
   });
   final Player player;
+  final void Function(int delta) onChangePoison;
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
       minWidth: 10,
       shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
-      onPressed: () => {player.changePoison(1)},
-      onLongPress: () => {player.changePoison(-1)},
+      onPressed: () => onChangePoison(1),
+      onLongPress: () => onChangePoison(-1),
         child: 
         Container(
           height: 30,
@@ -113,14 +122,16 @@ class ExperienceButton extends StatelessWidget {
   ExperienceButton({
     super.key,
     required this.player,
+    required this.onChangeExperience,
   });
   final Player player;
+  final void Function(int delta) onChangeExperience;
 
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: () => {player.changeExperience(1)},
-      onLongPress: () => {player.changeExperience(-1)},
+      onPressed: () => onChangeExperience(1),
+      onLongPress: () => onChangeExperience(-1),
       minWidth: 10,
       shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
         child: Container(

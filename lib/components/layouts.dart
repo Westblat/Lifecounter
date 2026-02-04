@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:the_lifecounter/main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/player.dart';
-import 'package:the_lifecounter/components/player_card.dart';
-import 'package:provider/provider.dart';
+import 'package:the_lifecounter/components/local/player_card.dart';
+import 'package:the_lifecounter/state/game_state.dart';
 
-class HorizontalPlayerCards extends StatelessWidget {
+class HorizontalPlayerCards extends ConsumerWidget {
   HorizontalPlayerCards({
     super.key,
     required this.leftSide,
@@ -19,9 +19,7 @@ class HorizontalPlayerCards extends StatelessWidget {
   final List<double> alignmentPoints = [-0.5, 0.5, 0,0,0,0,0,0];
 
   @override
-  Widget build(BuildContext context) {    
-    var appState = context.watch<MyAppState>();
-
+  Widget build(BuildContext context, WidgetRef ref) {    
     return Stack(
       children: [
         Row(
@@ -36,7 +34,7 @@ class HorizontalPlayerCards extends StatelessWidget {
                       child: 
                         RotatedBox(
                           quarterTurns: 1,
-                          child: PlayerCard(player: player, standard: standard,)
+                          child: PlayerCard(playerNumber: player.playerNumber, standard: standard,)
                         ),
                       ),
                 ],
@@ -51,7 +49,7 @@ class HorizontalPlayerCards extends StatelessWidget {
                         child: 
                           RotatedBox(
                             quarterTurns: 3,
-                            child: PlayerCard(player: player, standard: standard,)
+                            child: PlayerCard(playerNumber: player.playerNumber, standard: standard,)
                           ),
                         ),
                 ],
@@ -63,7 +61,13 @@ class HorizontalPlayerCards extends StatelessWidget {
       for(int restart = 0; restart < leftSide.length; restart++ )
         Align(
           alignment: Alignment(0, alignmentPoints[restart]),
-          child: IconButton(onPressed: () => appState.resetStandard(leftSide[restart]), icon: Icon(Icons.restart_alt_rounded), iconSize: 50,),
+          child: IconButton(
+            onPressed: () => ref
+                .read(gameStateProvider.notifier)
+                .resetStandard(leftSide[restart].playerNumber),
+            icon: Icon(Icons.restart_alt_rounded),
+            iconSize: 50,
+          ),
         )
     ]
     );
@@ -116,19 +120,19 @@ class PlayersBothEndLayout extends StatelessWidget {
       children: [
         SizedBox(
           height: height,
-          child: 
-            RotatedBox(
-              quarterTurns: 2,
-              child: PlayerCard(player: players[0])
-            ),
-          ),
+              child: 
+                RotatedBox(
+                  quarterTurns: 2,
+                  child: PlayerCard(playerNumber: players[0].playerNumber)
+                ),
+              ),
         Expanded(
           child: HorizontalPlayerCards(leftSide: leftSide, rigthSide: rigthSide),
         ),
         SizedBox(
           height: height,
           child: 
-            PlayerCard(player: players[1])
+            PlayerCard(playerNumber: players[1].playerNumber)
         ),
 
       ],
@@ -161,12 +165,12 @@ class PlayersOneEndLayout extends StatelessWidget {
       children: [
         SizedBox(
           height: height,
-          child: 
-            RotatedBox(
-              quarterTurns: 2,
-              child: PlayerCard(player: players[0])
+            child: 
+              RotatedBox(
+                quarterTurns: 2,
+                child: PlayerCard(playerNumber: players[0].playerNumber)
+              ),
             ),
-          ),
         Expanded(
           child: HorizontalPlayerCards(leftSide: leftSide, rigthSide: rigthSide),
         ),
@@ -202,13 +206,13 @@ class StandardLayout extends StatelessWidget {
             child: 
               RotatedBox(
                 quarterTurns: 2,
-                child: PlayerCard(player: players[0], standard: true,)
+                child: PlayerCard(playerNumber: players[0].playerNumber, standard: true,)
               ),
             ),
           SizedBox(
             height: height,
             child: 
-              PlayerCard(player: players[1], standard: true,)
+              PlayerCard(playerNumber: players[1].playerNumber, standard: true,)
           ),
         ],
       );

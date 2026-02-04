@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/components/global_settings.dart';
-import 'package:the_lifecounter/functions/player.dart';
+import 'package:the_lifecounter/state/game_state.dart';
 
+import 'components/menu.dart';
 import 'components/layouts.dart';
 
 void main() {
@@ -12,7 +13,7 @@ void main() {
     DeviceOrientation.portraitUp,
     DeviceOrientation.portraitDown,
   ]);
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -20,171 +21,134 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => MyAppState(),
-      child: MaterialApp(
-        title: 'The Lifecounter',
-        theme: ThemeData(
-          useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
-        ),
-        home: MyHomePage(),
+    return MaterialApp(
+      title: 'The Lifecounter',
+      theme: ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade700),
       ),
+      home: const ModeMenu(),
     );
   }
 }
 
+class MyHomePage extends ConsumerStatefulWidget {
+  const MyHomePage({
+    super.key,
+    this.showSettingsInitially = false,
+    this.autoStartHost = false,
+  });
 
-class MyAppState extends ChangeNotifier {
-  String layout = "default";
-  void setLayout(String newLayout) {
-      layout = newLayout;
-      notifyListeners();
-  }
-  String gameMode = 'commander';
-
-  List<Player> getOtherPlayers(Player currentPlayer) {
-    if (gameMode == 'standard') return getOtherPlayersStandard(currentPlayer);
-    return getOtherPlayersCommander(currentPlayer);
-  }
-
-
-  List<Player> getOtherPlayersCommander(Player currentPlayer) {
-    List<Player> otherPlayers = List<Player>.from(players);
-    otherPlayers.removeWhere((player) => player == currentPlayer);
-    return otherPlayers;
-  }
-
-  List<Player> getOtherPlayersStandard(Player currentPlayer) {
-    // Players are paired as 1 and 2, meaning that numbers modulo 2 that are 0 are pared with the lower person 
-    List<Player> otherPlayers;
-    if(currentPlayer.playerNumber % 2 == 0){
-      otherPlayers = players.where((player) => player.playerNumber == currentPlayer.playerNumber - 1).toList();
-    } else {
-      otherPlayers = players.where((player) => player.playerNumber == currentPlayer.playerNumber + 1).toList();
-    }
-    return otherPlayers;
-  }
-
-
-  late List<Player> players = <Player>[
-    Player(playerNumber: 1, getOtherPlayers: getOtherPlayers),
-    Player(playerNumber: 2, getOtherPlayers: getOtherPlayers),
-    Player(playerNumber: 3, getOtherPlayers: getOtherPlayers),
-    Player(playerNumber: 4, getOtherPlayers: getOtherPlayers),
-  ];
-
-  void setGameMode(String newGameMode){
-    gameMode = newGameMode;
-    for (Player player in players) {
-      player.setGameMode(newGameMode);
-      player.resetGame();
-    }
-  }
-
-  void restartGame() {
-    for (Player player in players) {
-      player.resetGame();
-    }
-  }
-
-  void resetStandard(Player resetPlayer) {
-    final resetPlayers = players.where((player) => player.playerNumber == resetPlayer.playerNumber || player.playerNumber == resetPlayer.playerNumber - 1);
-    for (var player in resetPlayers) {
-      player.resetGame();
-    }
-  }
-
-  void addPlayer() {
-    if (gameMode == "standard") {
-      // Standard is two player game, has to add two people at the time
-      players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers, gameMode: 'standard'));
-      for(Player player in players) {
-        player.newPlayerAdded();
-      }
-      players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers, gameMode: 'standard'));
-      for(Player player in players) {
-        player.newPlayerAdded();
-      }
-    } else {
-      players.add(Player(playerNumber: players.length + 1, getOtherPlayers: getOtherPlayers));
-      for(Player player in players) {
-        player.newPlayerAdded();
-      }
-    }
-    notifyListeners();
-  }
-
-  void removePlayer(){
-    final minPlayers = gameMode == 'standard' ? 2 : 1;
-    if (players.length <= minPlayers) {
-      return;
-    }
-    if(gameMode == 'standard') {
-      players.removeLast();
-      for(Player player in players) {
-        player.playerRemoved();
-      }
-      players.removeLast();
-      for(Player player in players) {
-        player.playerRemoved();
-      }
-    }else {
-      players.removeLast();
-      for(Player player in players) {
-        player.playerRemoved();
-      }
-    }
-    notifyListeners();
-  }
-}
-
-
-class MyHomePage extends StatefulWidget {
+  final bool showSettingsInitially;
+  final bool autoStartHost;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  var globalSettingsVisible = false;
-  
+
+class _MyHomePageState extends ConsumerState<MyHomePage> {
+  late bool globalSettingsVisible = widget.showSettingsInitially;
+  bool hostPopupVisible = false;
+
+  void showGlobalSettings() {
+    setState(() {
+      globalSettingsVisible = !globalSettingsVisible;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    var appState = context.watch<MyAppState>();
+    final gameState = ref.watch(gameStateProvider);
 
-    void showGlobalSettings() {
-      setState(() {
-        globalSettingsVisible = !globalSettingsVisible;
-      });
-    }
-    
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Scaffold(
-          body: SafeArea(
-            child: Stack(
-              children: [
-                switch (appState.layout) {
-                    "default" => DefaultLayout(players: appState.players),
-                    "bothEnds" => PlayersBothEndLayout(players: appState.players),
-                    "oneEnd" => PlayersOneEndLayout(players: appState.players,),
-                    "standard" => StandardLayout(players: appState.players),
-                    String() => throw UnimplementedError(),
-                  },
+    return LayoutBuilder(builder: (context, constraints) {
+      return Scaffold(
+        body: SafeArea(
+          child: Stack(
+            children: [
+              switch (gameState.layout) {
+                "default" => DefaultLayout(players: gameState.players),
+                "bothEnds" => PlayersBothEndLayout(players: gameState.players),
+                "oneEnd" => PlayersOneEndLayout(players: gameState.players),
+                "standard" => StandardLayout(players: gameState.players),
+                String() => throw UnimplementedError(),
+              },
+              IgnorePointer(
+                ignoring: !globalSettingsVisible,
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 300),
+                  opacity: globalSettingsVisible ? 0.55 : 0.0,
+                  child: GestureDetector(
+                    onTap: showGlobalSettings,
+                    child: Container(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
               Align(
                 alignment: Alignment.center,
-                child: IconButton(onPressed: showGlobalSettings, icon: Icon(Icons.settings)),
+                child: IgnorePointer(
+                  ignoring: !globalSettingsVisible,
+                  child: AnimatedScale(
+                    scale: globalSettingsVisible ? 1.0 : 0.9,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutBack,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 180),
+                    opacity: globalSettingsVisible ? 1.0 : 0.0,
+                    child: GlobalSettings(
+                      autoStartHost: widget.autoStartHost,
+                      onHostPopupChanged: (visible) {
+                        setState(() {
+                          hostPopupVisible = visible;
+                        });
+                      },
+                    ),
+                  ),
+                ),
               ),
-              if(globalSettingsVisible) Align(
+              ),
+              Align(
                 alignment: Alignment.center,
-                child: GlobalSettings(),
-              )
-              ],
-            ),
-          ),        
-        );
-      }
-    );
+                child: IgnorePointer(
+                  ignoring: hostPopupVisible,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    opacity: hostPopupVisible ? 0.0 : 1.0,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      height: globalSettingsVisible ? 68 : 52,
+                      width: globalSettingsVisible ? 68 : 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: globalSettingsVisible
+                            ? Colors.black.withValues(alpha:0.85)
+                            : null,
+                        boxShadow: [
+                          if (globalSettingsVisible)
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha:0.4),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            )
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: showGlobalSettings,
+                        iconSize: globalSettingsVisible ? 36 : 30,
+                        color: globalSettingsVisible ? Colors.white : Colors.black,
+                        icon: const Icon(Icons.settings),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 }
