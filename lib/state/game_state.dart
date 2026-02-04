@@ -8,21 +8,25 @@ class GameState {
     required this.layout,
     required this.gameMode,
     required this.players,
+    this.assignedPlayer,
   });
 
   final String layout;
   final String gameMode;
   final List<Player> players;
+  final int? assignedPlayer;
 
   GameState copyWith({
     String? layout,
     String? gameMode,
     List<Player>? players,
+    int? assignedPlayer,
   }) {
     return GameState(
       layout: layout ?? this.layout,
       gameMode: gameMode ?? this.gameMode,
       players: players ?? this.players,
+      assignedPlayer: assignedPlayer ?? this.assignedPlayer,
     );
   }
 

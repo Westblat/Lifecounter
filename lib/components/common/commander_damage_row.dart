@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/utlis.dart';
 import 'package:the_lifecounter/state/game_state.dart';
+import 'package:the_lifecounter/functions/player.dart';
 
-class CommanderDamageRow extends ConsumerWidget {
+class CommanderDamageRow extends StatelessWidget {
   const CommanderDamageRow({
     super.key,
-    required this.playerNumber,
+    required this.player,
+    required this.state,
+    required this.onDealDamage,
   });
 
-  final int playerNumber;
+  final Player player;
+  final GameState state;
+  final void Function(int fromPlayer, int delta) onDealDamage;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(gameStateProvider);
-    final matching =
-        state.players.where((p) => p.playerNumber == playerNumber).toList();
-    if (matching.isEmpty) return const SizedBox.shrink();
-    final player = matching.first;
-    final order = orderedOpponents(state, playerNumber);
+  Widget build(BuildContext context) {
+    final order = orderedOpponents(state, player.playerNumber);
 
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
@@ -39,18 +38,10 @@ class CommanderDamageRow extends ConsumerWidget {
                         : null,
                   ),
                   child: MaterialButton(
-                    onPressed: () => ref
-                        .read(gameStateProvider.notifier)
-                        .dealCommanderDamage(
-                            playerNumber: playerNumber,
-                            fromPlayerNumber: otherPlayer.playerNumber,
-                            delta: -1),
-                    onLongPress: () => ref
-                        .read(gameStateProvider.notifier)
-                        .dealCommanderDamage(
-                            playerNumber: playerNumber,
-                            fromPlayerNumber: otherPlayer.playerNumber,
-                            delta: 1),
+                    onPressed: () =>
+                        onDealDamage(otherPlayer.playerNumber, -1),
+                    onLongPress: () =>
+                        onDealDamage(otherPlayer.playerNumber, 1),
                     child: Container(
                         height: 48,
                         width: 40,

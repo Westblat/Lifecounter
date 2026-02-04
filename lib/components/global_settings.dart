@@ -1,103 +1,184 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:the_lifecounter/components/host_controls.dart';
 import 'package:the_lifecounter/state/game_state.dart';
 
-class GlobalSettings extends ConsumerWidget {
+class GlobalSettings extends ConsumerStatefulWidget {
   const GlobalSettings({
     super.key,
+    this.autoStartHost = false,
+    this.onHostPopupChanged,
   });
 
+  final bool autoStartHost;
+  final void Function(bool visible)? onHostPopupChanged;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<GlobalSettings> createState() => _GlobalSettingsState();
+}
+
+class _GlobalSettingsState extends ConsumerState<GlobalSettings> {
+  bool showHostPopup = false;
+
+  @override
+  Widget build(BuildContext context) {
     final controller = ref.read(gameStateProvider.notifier);
     final gameState = ref.watch(gameStateProvider);
     final color = Theme.of(context).colorScheme;
 
     return Center(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      child: Stack(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                _RoundIconButton(
-                  icon: Icons.restart_alt_rounded,
-                  label: "Restart",
-                  onPressed: controller.restartGame,
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _RoundIconButton(
+                      icon: Icons.restart_alt_rounded,
+                      label: "Restart",
+                      onPressed: controller.restartGame,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _RoundIconButton(
+                      icon: Icons.add_circle_outline,
+                      label: "Add",
+                      onPressed: controller.addPlayer,
+                    ),
+                    const SizedBox(width: 32),
+                    _RoundIconButton(
+                      icon: Icons.remove_circle_outline,
+                      label: "Remove",
+                      onPressed: controller.removePlayer,
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 75),
+                _CircleButton(
+                  selected: gameState.layout == "standard",
+                  child: Text(
+                    "S",
+                    style: TextStyle(
+                      fontSize: 38,
+                      fontWeight: FontWeight.bold,
+                      color: gameState.layout == "standard"
+                          ? color.onPrimaryContainer
+                          : Colors.white,
+                    ),
+                  ),
+                  onTap: () {
+                    controller.setLayout("standard");
+                    controller.setGameMode('standard');
+                  },
+                ),
+                const SizedBox(height: 18),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _CircleIcon(
+                      asset: "lib/custom_icons/default_icon.png",
+                      selected: gameState.layout == "default",
+                      onTap: () {
+                        controller.setGameMode('commander');
+                        controller.setLayout("default");
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    _CircleIcon(
+                      asset: "lib/custom_icons/both_ends_icon.png",
+                      selected: gameState.layout == "bothEnds",
+                      onTap: () {
+                        controller.setGameMode('commander');
+                        controller.setLayout("bothEnds");
+                      },
+                    ),
+                    const SizedBox(width: 10),
+                    _CircleIcon(
+                      asset: "lib/custom_icons/one_end_icon.png",
+                      selected: gameState.layout == "oneEnd",
+                      onTap: () {
+                        controller.setGameMode('commander');
+                        controller.setLayout("oneEnd");
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      showHostPopup = true;
+                    });
+                    widget.onHostPopupChanged?.call(true);
+                  },
+                  icon: const Icon(Icons.settings_input_antenna),
+                  label: const Text('Host settings'),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _RoundIconButton(
-                  icon: Icons.add_circle_outline,
-                  label: "Add",
-                  onPressed: controller.addPlayer,
-                ),
-                const SizedBox(width: 32),
-                _RoundIconButton(
-                  icon: Icons.remove_circle_outline,
-                  label: "Remove",
-                  onPressed: controller.removePlayer,
-                ),
-              ],
-            ),
-            const SizedBox(height: 75),
-            _CircleButton(
-              selected: gameState.layout == "standard",
-              child: Text(
-                "S",
-                style: TextStyle(
-                  fontSize: 38,
-                  fontWeight: FontWeight.bold,
-                  color: gameState.layout == "standard"
-                      ? color.onPrimaryContainer
-                      : Colors.white,
+          ),
+          Positioned.fill(
+            child: IgnorePointer(
+              ignoring: !showHostPopup,
+              child: AnimatedOpacity(
+                duration: const Duration(milliseconds: 200),
+                opacity: showHostPopup ? 1.0 : 0.0,
+                child: Container(
+                  color: Colors.black.withOpacity(0.6),
+                  child: Center(
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 500),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(12),
+                        color: Colors.white,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    const Text(
+                                      'Host settings',
+                                      style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    IconButton(
+                                      icon: const Icon(Icons.close),
+                                      onPressed: () {
+                                        setState(() {
+                                          showHostPopup = false;
+                                        });
+                                        widget.onHostPopupChanged?.call(false);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                HostControls(startOnInit: widget.autoStartHost),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              onTap: () {
-                controller.setLayout("standard");
-                controller.setGameMode('standard');
-              },
             ),
-            const SizedBox(height: 18),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _CircleIcon(
-                  asset: "lib/custom_icons/default_icon.png",
-                  selected: gameState.layout == "default",
-                  onTap: () {
-                    controller.setGameMode('commander');
-                    controller.setLayout("default");
-                  },
-                ),
-                const SizedBox(width: 10),
-                _CircleIcon(
-                  asset: "lib/custom_icons/both_ends_icon.png",
-                  selected: gameState.layout == "bothEnds",
-                  onTap: () {
-                    controller.setGameMode('commander');
-                    controller.setLayout("bothEnds");
-                  },
-                ),
-                const SizedBox(width: 10),
-                _CircleIcon(
-                  asset: "lib/custom_icons/one_end_icon.png",
-                  selected: gameState.layout == "oneEnd",
-                  onTap: () {
-                    controller.setGameMode('commander');
-                    controller.setLayout("oneEnd");
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

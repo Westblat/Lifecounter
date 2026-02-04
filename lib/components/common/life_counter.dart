@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/player.dart';
 import 'package:the_lifecounter/functions/utlis.dart';
-import 'package:the_lifecounter/state/game_state.dart';
 
-class LifeCounter extends ConsumerWidget {
+class LifeCounter extends StatelessWidget {
   LifeCounter({
     super.key,
     required this.player,
+    required this.onChangeLife,
   });
 
   final Player player;
+  final void Function(int delta) onChangeLife;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
       final bool isTall = constraints.maxHeight > 117;
       final bool isWide = constraints.maxWidth > 400;
@@ -35,7 +35,7 @@ class LifeCounter extends ConsumerWidget {
                           MaterialButton(
                             height: 40,
                             onPressed: () {
-                              ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, -5);
+                              onChangeLife(-5);
                             },
                             child: WhiteBorderText(text: "- 5", strokeWidth: 2,),
                             ),
@@ -50,7 +50,7 @@ class LifeCounter extends ConsumerWidget {
                             minWidth: 10,
                             height: 40,
                             onPressed: () {
-                              ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, -5);
+                              onChangeLife(-5);
                             },
                             child: WhiteBorderText(text: "- 5", strokeWidth: 2),
                         ),
@@ -58,7 +58,7 @@ class LifeCounter extends ConsumerWidget {
                         MaterialButton(
                           height: 60,
                           onPressed: () {
-                            ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, -1);
+                            onChangeLife(-1);
                           },
                           child: WhiteBorderText(text: "–", fontSize: 50,),
                           ),
@@ -88,7 +88,7 @@ class LifeCounter extends ConsumerWidget {
                           MaterialButton(
                             height: 40,
                             onPressed: () {
-                              ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, 5);
+                              onChangeLife(5);
                             },
                             child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
                             ),
@@ -101,7 +101,7 @@ class LifeCounter extends ConsumerWidget {
                         MaterialButton(
                           height: 60,
                           onPressed: () {
-                            ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, 1);
+                            onChangeLife(1);
                           },
                           child: WhiteBorderText(text: "+", fontSize: 50,),
                           ),
@@ -111,7 +111,7 @@ class LifeCounter extends ConsumerWidget {
                               height: 40,
                               minWidth: 10,
                               onPressed: () {
-                                ref.read(gameStateProvider.notifier).changeLife(player.playerNumber, 5);
+                                onChangeLife(5);
                               },
                               child: WhiteBorderText(text: "+ 5", strokeWidth: 2),
                             ),

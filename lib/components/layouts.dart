@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/functions/player.dart';
-import 'package:the_lifecounter/components/player_card.dart';
+import 'package:the_lifecounter/components/local/player_card.dart';
 import 'package:the_lifecounter/state/game_state.dart';
 
 class HorizontalPlayerCards extends ConsumerWidget {

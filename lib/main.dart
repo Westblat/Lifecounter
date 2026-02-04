@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/components/global_settings.dart';
 import 'package:the_lifecounter/state/game_state.dart';
 
+import 'components/menu.dart';
 import 'components/layouts.dart';
 
 void main() {
@@ -26,20 +27,28 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
       ),
-      home: const MyHomePage(),
+      home: const ModeMenu(),
     );
   }
 }
 
 class MyHomePage extends ConsumerStatefulWidget {
-  const MyHomePage({super.key});
+  const MyHomePage({
+    super.key,
+    this.showSettingsInitially = false,
+    this.autoStartHost = false,
+  });
+
+  final bool showSettingsInitially;
+  final bool autoStartHost;
 
   @override
   ConsumerState<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  var globalSettingsVisible = false;
+  late bool globalSettingsVisible = widget.showSettingsInitially;
+  bool hostPopupVisible = false;
 
   void showGlobalSettings() {
     setState(() {
@@ -78,45 +87,57 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
               Align(
                 alignment: Alignment.center,
-                child: AnimatedScale(
-                  scale: globalSettingsVisible ? 1.0 : 0.9,
-                  duration: const Duration(milliseconds: 200),
-                  curve: Curves.easeOutBack,
+                child: IgnorePointer(
+                  ignoring: !globalSettingsVisible,
+                  child: AnimatedScale(
+                    scale: globalSettingsVisible ? 1.0 : 0.9,
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOutBack,
                   child: AnimatedOpacity(
                     duration: const Duration(milliseconds: 180),
                     opacity: globalSettingsVisible ? 1.0 : 0.0,
-                    child: globalSettingsVisible
-                        ? const GlobalSettings()
-                        : const SizedBox.shrink(),
+                    child: GlobalSettings(
+                      autoStartHost: widget.autoStartHost,
+                      onHostPopupChanged: (visible) {
+                        setState(() {
+                          hostPopupVisible = visible;
+                        });
+                      },
+                    ),
                   ),
                 ),
               ),
+              ),
               Align(
                 alignment: Alignment.center,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  curve: Curves.easeOut,
-                  height: globalSettingsVisible ? 68 : 52,
-                  width: globalSettingsVisible ? 68 : 52,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: globalSettingsVisible
-                        ? Colors.black.withValues(alpha:0.85)
-                        : null,
-                    boxShadow: [
-                      if (globalSettingsVisible)
-                        BoxShadow(
-                          color: Colors.black.withValues(alpha:0.4),
-                          blurRadius: 12,
-                          spreadRadius: 2,
-                        )
-                    ],
-                  ),
-                  child: IconButton(
-                    onPressed: showGlobalSettings,
-                    iconSize: globalSettingsVisible ? 36 : 30,
-                    color: globalSettingsVisible ? Colors.white : Colors.black,
-                    icon: const Icon(Icons.settings),
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 150),
+                  opacity: hostPopupVisible ? 0.0 : 1.0,
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 180),
+                    curve: Curves.easeOut,
+                    height: globalSettingsVisible ? 68 : 52,
+                    width: globalSettingsVisible ? 68 : 52,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: globalSettingsVisible
+                          ? Colors.black.withValues(alpha:0.85)
+                          : null,
+                      boxShadow: [
+                        if (globalSettingsVisible)
+                          BoxShadow(
+                            color: Colors.black.withValues(alpha:0.4),
+                            blurRadius: 12,
+                            spreadRadius: 2,
+                          )
+                      ],
+                    ),
+                    child: IconButton(
+                      onPressed: showGlobalSettings,
+                      iconSize: globalSettingsVisible ? 36 : 30,
+                      color: globalSettingsVisible ? Colors.white : Colors.black,
+                      icon: const Icon(Icons.settings),
+                    ),
                   ),
                 ),
               ),
