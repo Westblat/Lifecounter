@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_lifecounter/components/remote/remote_player_card.dart';
 import 'package:the_lifecounter/functions/player.dart';
@@ -197,6 +198,38 @@ class _ClientPageState extends State<ClientPage> {
     );
   }
 
+  Future<void> _scanQr() async {
+    final result = await Navigator.of(context).push<String>(
+      MaterialPageRoute(builder: (_) => const _QrScanPage()),
+    );
+    if (!mounted || result == null) return;
+    final parsed = _parseHost(result);
+    if (parsed == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid QR code')),
+      );
+      return;
+    }
+    setState(() {
+      _ipController.text = parsed;
+    });
+  }
+
+  String? _parseHost(String input) {
+    final raw = input.trim();
+    if (raw.isEmpty) return null;
+    if (raw.contains('://')) {
+      final uri = Uri.tryParse(raw);
+      if (uri == null || uri.host.isEmpty) return null;
+      if (uri.hasPort) {
+        return '${uri.host}:${uri.port}';
+      }
+      return uri.host;
+    }
+    final main = raw.split('/').first;
+    return main.isEmpty ? null : main;
+  }
+
   @override
   Widget build(BuildContext context) {
     final assignedPlayer = _remoteState?.players.firstWhere(
@@ -257,6 +290,12 @@ class _ClientPageState extends State<ClientPage> {
                         hintText: 'IP address',
                       ),
                       keyboardType: TextInputType.url,
+                    ),
+                    const SizedBox(height: 8),
+                    OutlinedButton.icon(
+                      onPressed: _scanQr,
+                      icon: const Icon(Icons.qr_code_scanner),
+                      label: const Text('Scan QR'),
                     ),
                     const SizedBox(height: 12),
                     TextField(
@@ -328,6 +367,37 @@ class _FullScreenPlayer extends StatelessWidget {
       state: state,
       send: send,
       onDisconnect: onDisconnect,
+    );
+  }
+}
+
+class _QrScanPage extends StatefulWidget {
+  const _QrScanPage();
+
+  @override
+  State<_QrScanPage> createState() => _QrScanPageState();
+}
+
+class _QrScanPageState extends State<_QrScanPage> {
+  bool _found = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Scan QR'),
+      ),
+      body: MobileScanner(
+        onDetect: (capture) {
+          if (_found) return;
+          final barcodes = capture.barcodes;
+          if (barcodes.isEmpty) return;
+          final value = barcodes.first.rawValue;
+          if (value == null || value.trim().isEmpty) return;
+          _found = true;
+          Navigator.of(context).pop(value);
+        },
+      ),
     );
   }
 }

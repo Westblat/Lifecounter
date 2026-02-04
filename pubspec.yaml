@@ -16,6 +16,8 @@ dependencies:
   flutter_riverpod: ^2.4.10
   flutter_launcher_icons: ^0.13.1
   shared_preferences: ^2.3.2
+  qr_flutter: ^4.1.0
+  mobile_scanner: ^5.2.3
 
 dev_dependencies:
   flutter_test:

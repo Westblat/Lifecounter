@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:the_lifecounter/network/messages.dart';
 import 'package:the_lifecounter/state/game_state.dart';
 
@@ -29,6 +30,7 @@ class _HostControlsState extends ConsumerState<HostControls> {
   ProviderSubscription<GameState>? _gameListener;
   int _clientId = 1;
   final _rand = Random();
+  bool _showQr = true;
 
   @override
   void initState() {
@@ -295,6 +297,7 @@ class _HostControlsState extends ConsumerState<HostControls> {
   Widget build(BuildContext context) {
     const isWeb = kIsWeb;
     final state = ref.watch(gameStateProvider);
+    final hostAddress = _ip != null ? '$_ip:$_port' : null;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -322,7 +325,7 @@ class _HostControlsState extends ConsumerState<HostControls> {
         const SizedBox(height: 8),
         if (_running)
           Text(
-            'Host at: ${_ip != null ? '$_ip:$_port' : 'Unknown'}',
+            'Host at: ${hostAddress ?? 'Unknown'}',
             style: Theme.of(context).textTheme.bodyMedium,
           ),
         if (_ips.length > 1)
@@ -371,6 +374,41 @@ class _HostControlsState extends ConsumerState<HostControls> {
                 },
                 onDisconnect: () => _removeClient(c),
               )),
+        ],
+        if (_running && hostAddress != null && !isWeb) ...[
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Show QR code',
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+              Switch(
+                value: _showQr,
+                onChanged: (value) {
+                  setState(() {
+                    _showQr = value;
+                  });
+                },
+              ),
+            ],
+          ),
+          if (_showQr) ...[
+            const SizedBox(height: 8),
+            Text(
+              'Scan to connect',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+            const SizedBox(height: 8),
+            Center(
+              child: QrImageView(
+                data: hostAddress,
+                size: 160,
+                backgroundColor: Colors.white,
+              ),
+            ),
+          ],
         ],
       ],
     );

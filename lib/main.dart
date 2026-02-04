@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       title: 'The Lifecounter',
       theme: ThemeData(
         useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue.shade700),
       ),
       home: const ModeMenu(),
     );
