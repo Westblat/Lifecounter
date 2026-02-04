@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_lifecounter/components/remote/remote_player_card.dart';
+import 'package:the_lifecounter/components/remote/mock_remote_card_preview.dart';
 import 'package:the_lifecounter/functions/player.dart';
 import 'package:the_lifecounter/network/messages.dart';
 import 'package:the_lifecounter/state/game_state.dart';
@@ -175,7 +176,6 @@ class _ClientPageState extends State<ClientPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(error ?? 'Disconnected')),
     );
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   void _showHandshakeDialog(int code) {
@@ -241,98 +241,113 @@ class _ClientPageState extends State<ClientPage> {
 
     return Scaffold(
       body: SafeArea(
-        child: showFullscreen
-            ? _FullScreenPlayer(
-                player: assignedPlayer,
-                state: _remoteState!,
-                send: _sendCommand,
-                onDisconnect: () => _handleDisconnect(error: 'Disconnected'),
-              )
-            : Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Enter host IP:PORT',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    if (_recentIps.isNotEmpty)
-                      DropdownButtonFormField<String>(
-                        initialValue: _recentIps.contains(_ipController.text)
-                            ? _ipController.text
-                            : null,
-                        items: _recentIps
-                            .map(
-                              (ip) => DropdownMenuItem(
-                                value: ip,
-                                child: Text(ip),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            AnimatedSize(
+              duration: const Duration(milliseconds: 250),
+              curve: Curves.easeInOut,
+              child: showFullscreen
+                  ? const SizedBox.shrink()
+                  : Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Enter host IP:PORT',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          if (_recentIps.isNotEmpty)
+                            DropdownButtonFormField<String>(
+                              initialValue: _recentIps.contains(_ipController.text)
+                                  ? _ipController.text
+                                  : null,
+                              items: _recentIps
+                                  .map(
+                                    (ip) => DropdownMenuItem(
+                                      value: ip,
+                                      child: Text(ip),
+                                    ),
+                                  )
+                                  .toList(),
+                              onChanged: (value) {
+                                if (value == null) return;
+                                setState(() {
+                                  _ipController.text = value;
+                                });
+                              },
+                              decoration: const InputDecoration(
+                                border: OutlineInputBorder(),
+                                labelText: 'Recent hosts',
                               ),
-                            )
-                            .toList(),
-                        onChanged: (value) {
-                          if (value == null) return;
-                          setState(() {
-                            _ipController.text = value;
-                          });
-                        },
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Recent hosts',
-                        ),
+                            ),
+                          if (_recentIps.isNotEmpty) const SizedBox(height: 8),
+                          TextField(
+                            controller: _ipController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'IP address',
+                            ),
+                            keyboardType: TextInputType.url,
+                          ),
+                          const SizedBox(height: 8),
+                          OutlinedButton.icon(
+                            onPressed: _scanQr,
+                            icon: const Icon(Icons.qr_code_scanner),
+                            label: const Text('Scan QR'),
+                          ),
+                          const SizedBox(height: 12),
+                          TextField(
+                            controller: _nameController,
+                            decoration: const InputDecoration(
+                              border: OutlineInputBorder(),
+                              hintText: 'Your name',
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          ElevatedButton(
+                            onPressed: _connecting ? null : _connect,
+                            child: _connecting
+                                ? const SizedBox(
+                                    height: 16,
+                                    width: 16,
+                                    child:
+                                        CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Text('Connect'),
+                          ),
+                          const SizedBox(height: 12),
+                          if (_error != null)
+                            Text(
+                              _error!,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          if (_socket != null)
+                            const Text(
+                              'Connected!',
+                              style: TextStyle(color: Colors.green),
+                            ),
+                          const SizedBox(height: 16),
+                          if (_remoteState != null && !_lockedToAssigned)
+                            const Text('Waiting for host to assign your player...'),
+                        ],
                       ),
-                    if (_recentIps.isNotEmpty) const SizedBox(height: 8),
-                    TextField(
-                      controller: _ipController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'IP address',
-                      ),
-                      keyboardType: TextInputType.url,
                     ),
-                    const SizedBox(height: 8),
-                    OutlinedButton.icon(
-                      onPressed: _scanQr,
-                      icon: const Icon(Icons.qr_code_scanner),
-                      label: const Text('Scan QR'),
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: _nameController,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
-                        hintText: 'Your name',
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton(
-                      onPressed: _connecting ? null : _connect,
-                      child: _connecting
-                          ? const SizedBox(
-                              height: 16,
-                              width: 16,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Connect'),
-                    ),
-                    const SizedBox(height: 12),
-                    if (_error != null)
-                      Text(
-                        _error!,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    if (_socket != null)
-                      const Text(
-                        'Connected!',
-                        style: TextStyle(color: Colors.green),
-                      ),
-                    const SizedBox(height: 16),
-                    if (_remoteState != null && !_lockedToAssigned)
-                      const Text('Waiting for host to assign your player...'),
-                  ],
-                ),
+            ),
+              Expanded(
+                child: showFullscreen
+                    ? _FullScreenPlayer(
+                        player: assignedPlayer,
+                        state: _remoteState!,
+                        send: _sendCommand,
+                        onDisconnect: () => _handleDisconnect(error: 'Disconnected'),
+                      )
+                    : const MockRemoteCardPreview(),
               ),
+          ],
+        ),
       ),
     );
   }
@@ -370,6 +385,7 @@ class _FullScreenPlayer extends StatelessWidget {
     );
   }
 }
+
 
 class _QrScanPage extends StatefulWidget {
   const _QrScanPage();
