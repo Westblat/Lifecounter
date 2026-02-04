@@ -47,19 +47,16 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
           playerNumber,
           (player) => player.copyWith(background: background),
         );
-        break;
       case 'toggleIcon':
         _updatePlayer(
           playerNumber,
           (player) => player.copyWith(icon: !player.icon),
         );
-        break;
       case 'toggleBlur':
         _updatePlayer(
           playerNumber,
           (player) => player.copyWith(blur: !player.blur),
         );
-        break;
       case 'changeLife':
         final delta = payload['delta'] as int?;
         if (delta == null) return;
@@ -67,7 +64,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
           playerNumber,
           (player) => player.copyWith(life: player.life + delta),
         );
-        break;
       case 'changeLifeAllPlayers':
         final delta = payload['delta'] as int?;
         if (delta == null) return;
@@ -78,7 +74,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
                 .toList(),
           );
         });
-        break;
       case 'changeLifeOthers':
         final delta = payload['delta'] as int?;
         if (delta == null) return;
@@ -91,7 +86,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
                 .toList(),
           );
         });
-        break;
       case 'changeLifeOthersAndSelf':
         final othersDelta = payload['othersDelta'] as int?;
         final selfDelta = payload['selfDelta'] as int?;
@@ -105,7 +99,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
                 .toList(),
           );
         });
-        break;
       case 'changePoison':
         final delta = payload['delta'] as int?;
         if (delta == null) return;
@@ -113,7 +106,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
           playerNumber,
           (player) => player.copyWith(poison: player.poison + delta),
         );
-        break;
       case 'changeExperience':
         final delta = payload['delta'] as int?;
         if (delta == null) return;
@@ -121,7 +113,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
           playerNumber,
           (player) => player.copyWith(experience: player.experience + delta),
         );
-        break;
       case 'dealCommanderDamage':
         final from = payload['from'] as int?;
         final delta = payload['delta'] as int?;
@@ -137,7 +128,6 @@ class _MockRemoteCardPreviewState extends State<MockRemoteCardPreview> {
             );
           },
         );
-        break;
       default:
         break;
     }
