@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:the_lifecounter/components/remote/remote_player_card.dart';
 import 'package:the_lifecounter/functions/player.dart';
 import 'package:the_lifecounter/network/messages.dart';
@@ -15,6 +16,11 @@ class ClientPage extends StatefulWidget {
 }
 
 class _ClientPageState extends State<ClientPage> {
+  static const String _lastIpKey = 'client_last_ip';
+  static const String _recentIpsKey = 'client_recent_ips';
+  static const String _lastNameKey = 'client_last_name';
+  static const int _maxRecentIps = 5;
+
   final TextEditingController _ipController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
   WebSocket? _socket;
@@ -24,6 +30,32 @@ class _ClientPageState extends State<ClientPage> {
   int _playerNumber = 1;
   bool _lockedToAssigned = false;
   bool _handshakeAccepted = false;
+  List<String> _recentIps = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadPrefs();
+  }
+
+
+  Future<void> _loadPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedIp = prefs.getString(_lastIpKey);
+    final savedName = prefs.getString(_lastNameKey);
+    final recent = prefs.getStringList(_recentIpsKey) ?? <String>[];
+    if (!mounted) return;
+    setState(() {
+      if (savedIp != null && savedIp.trim().isNotEmpty) {
+        _ipController.text = savedIp;
+      }
+      if (savedName != null && savedName.trim().isNotEmpty) {
+        _nameController.text = savedName;
+      }
+      _recentIps = recent.where((ip) => ip.trim().isNotEmpty).toList();
+    });
+  }
+
 
   @override
   void dispose() {
@@ -45,8 +77,20 @@ class _ClientPageState extends State<ClientPage> {
     });
     try {
       final ws = await WebSocket.connect('ws://$target');
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString(_lastIpKey, target);
+      await prefs.setString(_lastNameKey, name);
+      final updatedRecent = <String>[
+        target,
+        ..._recentIps.where((ip) => ip != target),
+      ];
+      if (updatedRecent.length > _maxRecentIps) {
+        updatedRecent.removeRange(_maxRecentIps, updatedRecent.length);
+      }
+      await prefs.setStringList(_recentIpsKey, updatedRecent);
       setState(() {
         _socket = ws;
+        _recentIps = updatedRecent;
       });
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -119,6 +163,7 @@ class _ClientPageState extends State<ClientPage> {
 
   void _handleDisconnect({String? error}) {
     if (!mounted) return;
+    _socket?.close();
     _socket = null;
     _remoteState = null;
     _lockedToAssigned = false;
@@ -180,11 +225,36 @@ class _ClientPageState extends State<ClientPage> {
                       style: Theme.of(context).textTheme.titleMedium,
                     ),
                     const SizedBox(height: 8),
+                    if (_recentIps.isNotEmpty)
+                      DropdownButtonFormField<String>(
+                        initialValue: _recentIps.contains(_ipController.text)
+                            ? _ipController.text
+                            : null,
+                        items: _recentIps
+                            .map(
+                              (ip) => DropdownMenuItem(
+                                value: ip,
+                                child: Text(ip),
+                              ),
+                            )
+                            .toList(),
+                        onChanged: (value) {
+                          if (value == null) return;
+                          setState(() {
+                            _ipController.text = value;
+                          });
+                        },
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          labelText: 'Recent hosts',
+                        ),
+                      ),
+                    if (_recentIps.isNotEmpty) const SizedBox(height: 8),
                     TextField(
                       controller: _ipController,
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
-                        hintText: '192.168.0.12:50505',
+                        hintText: 'IP address',
                       ),
                       keyboardType: TextInputType.url,
                     ),

@@ -110,33 +110,36 @@ class _MyHomePageState extends ConsumerState<MyHomePage> {
               ),
               Align(
                 alignment: Alignment.center,
-                child: AnimatedOpacity(
-                  duration: const Duration(milliseconds: 150),
-                  opacity: hostPopupVisible ? 0.0 : 1.0,
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 180),
-                    curve: Curves.easeOut,
-                    height: globalSettingsVisible ? 68 : 52,
-                    width: globalSettingsVisible ? 68 : 52,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: globalSettingsVisible
-                          ? Colors.black.withValues(alpha:0.85)
-                          : null,
-                      boxShadow: [
-                        if (globalSettingsVisible)
-                          BoxShadow(
-                            color: Colors.black.withValues(alpha:0.4),
-                            blurRadius: 12,
-                            spreadRadius: 2,
-                          )
-                      ],
-                    ),
-                    child: IconButton(
-                      onPressed: showGlobalSettings,
-                      iconSize: globalSettingsVisible ? 36 : 30,
-                      color: globalSettingsVisible ? Colors.white : Colors.black,
-                      icon: const Icon(Icons.settings),
+                child: IgnorePointer(
+                  ignoring: hostPopupVisible,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 150),
+                    opacity: hostPopupVisible ? 0.0 : 1.0,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 180),
+                      curve: Curves.easeOut,
+                      height: globalSettingsVisible ? 68 : 52,
+                      width: globalSettingsVisible ? 68 : 52,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: globalSettingsVisible
+                            ? Colors.black.withValues(alpha:0.85)
+                            : null,
+                        boxShadow: [
+                          if (globalSettingsVisible)
+                            BoxShadow(
+                              color: Colors.black.withValues(alpha:0.4),
+                              blurRadius: 12,
+                              spreadRadius: 2,
+                            )
+                        ],
+                      ),
+                      child: IconButton(
+                        onPressed: showGlobalSettings,
+                        iconSize: globalSettingsVisible ? 36 : 30,
+                        color: globalSettingsVisible ? Colors.white : Colors.black,
+                        icon: const Icon(Icons.settings),
+                      ),
                     ),
                   ),
                 ),

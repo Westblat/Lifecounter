@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:the_lifecounter/network/messages.dart';
@@ -49,6 +50,12 @@ class _HostControlsState extends ConsumerState<HostControls> {
 
   Future<void> _startServer() async {
     if (_running || _starting) return;
+    if (kIsWeb) {
+      _safeSetState(() {
+        _error = 'Hosting is not supported in web builds.';
+      });
+      return;
+    }
     _safeSetState(() {
       _starting = true;
       _error = null;
@@ -168,21 +175,18 @@ class _HostControlsState extends ConsumerState<HostControls> {
         if (playerNumber != null && delta != null) {
           controller.changeLife(playerNumber, delta);
         }
-        break;
       case 'changePoison':
         final playerNumber = command['player'] as int?;
         final delta = command['delta'] as int?;
         if (playerNumber != null && delta != null) {
           controller.changePoison(playerNumber, delta);
         }
-        break;
       case 'changeExperience':
         final playerNumber = command['player'] as int?;
         final delta = command['delta'] as int?;
         if (playerNumber != null && delta != null) {
           controller.changeExperience(playerNumber, delta);
         }
-        break;
       case 'dealCommanderDamage':
         final playerNumber = command['player'] as int?;
         final from = command['from'] as int?;
@@ -194,20 +198,17 @@ class _HostControlsState extends ConsumerState<HostControls> {
             delta: delta,
           );
         }
-        break;
       case 'changeLifeAllPlayers':
         final delta = command['delta'] as int?;
         if (delta != null) {
           controller.changeLifeAllPlayers(delta);
         }
-        break;
       case 'changeLifeOthers':
         final playerNumber = command['player'] as int?;
         final delta = command['delta'] as int?;
         if (playerNumber != null && delta != null) {
           controller.changeLifeOthers(playerNumber, delta);
         }
-        break;
       case 'changeLifeOthersAndSelf':
         final playerNumber = command['player'] as int?;
         final othersDelta = command['othersDelta'] as int?;
@@ -221,26 +222,22 @@ class _HostControlsState extends ConsumerState<HostControls> {
             selfDelta: selfDelta,
           );
         }
-        break;
       case 'changeBackground':
         final playerNumber = command['player'] as int?;
         final background = command['background'] as String?;
         if (playerNumber != null && background != null) {
           controller.changeBackground(playerNumber, background);
         }
-        break;
       case 'toggleIcon':
         final playerNumber = command['player'] as int?;
         if (playerNumber != null) {
           controller.toggleIcon(playerNumber);
         }
-        break;
       case 'toggleBlur':
         final playerNumber = command['player'] as int?;
         if (playerNumber != null) {
           controller.toggleBlur(playerNumber);
         }
-        break;
       case 'introduce':
         final name = command['name'] as String?;
         final socket = command['_socket'] as WebSocket?;
@@ -253,7 +250,6 @@ class _HostControlsState extends ConsumerState<HostControls> {
             }
           }
         }
-        break;
       case 'handshakeConfirm':
         final socket = command['_socket'] as WebSocket?;
         final code = command['code'] as int?;
@@ -270,7 +266,6 @@ class _HostControlsState extends ConsumerState<HostControls> {
             }
           }
         }
-        break;
       default:
         break;
     }
@@ -298,6 +293,7 @@ class _HostControlsState extends ConsumerState<HostControls> {
 
   @override
   Widget build(BuildContext context) {
+    const isWeb = kIsWeb;
     final state = ref.watch(gameStateProvider);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -305,18 +301,24 @@ class _HostControlsState extends ConsumerState<HostControls> {
         Row(
           children: [
             ElevatedButton.icon(
-              onPressed: _running || _starting ? null : _startServer,
+              onPressed: _running || _starting || isWeb ? null : _startServer,
               icon: const Icon(Icons.wifi_tethering),
               label: Text(_starting ? 'Starting...' : 'Start hosting'),
             ),
             const SizedBox(width: 12),
             OutlinedButton.icon(
-              onPressed: _running ? _stopServer : null,
+              onPressed: _running && !isWeb ? _stopServer : null,
               icon: const Icon(Icons.stop),
               label: const Text('Stop'),
             ),
           ],
         ),
+        if (isWeb) ...[
+          const SizedBox(height: 8),
+          const Text(
+            'Hosting is not supported in web builds. Run the host on mobile or desktop.',
+          ),
+        ],
         const SizedBox(height: 8),
         if (_running)
           Text(
@@ -454,6 +456,7 @@ class _ClientTile extends StatelessWidget {
   final VoidCallback onApprove;
   final void Function(int?) onAssign;
   final VoidCallback onDisconnect;
+
 
   @override
   Widget build(BuildContext context) {
