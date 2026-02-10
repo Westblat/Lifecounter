@@ -82,6 +82,7 @@ jobs:
             echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u ${{ secrets.GHCR_USER }} --password-stdin
             cd ~/life_counter
             export IMAGE_TAG=${{ github.ref_name }}
+            export GITHUB_REPOSITORY=$(echo "${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
             docker compose pull
             docker compose up -d
             docker image prune -f
