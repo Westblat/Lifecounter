@@ -1,11 +1,10 @@
 import 'dart:convert';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:the_lifecounter/components/remote/remote_player_card.dart';
 import 'package:the_lifecounter/components/remote/mock_remote_card_preview.dart';
+import 'package:the_lifecounter/components/remote/qr_scan.dart';
 import 'package:the_lifecounter/functions/player.dart';
 import 'package:the_lifecounter/network/messages.dart';
 import 'package:the_lifecounter/state/game_state.dart';
@@ -25,7 +24,7 @@ class _ClientPageState extends State<ClientPage> {
 
   final TextEditingController _ipController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-  WebSocket? _socket;
+  WebSocketChannel? _socket;
   String? _error;
   bool _connecting = false;
   GameState? _remoteState;
@@ -61,7 +60,7 @@ class _ClientPageState extends State<ClientPage> {
 
   @override
   void dispose() {
-    _socket?.close();
+    _socket?.sink.close();
     _ipController.dispose();
     _nameController.dispose();
     super.dispose();
@@ -78,7 +77,7 @@ class _ClientPageState extends State<ClientPage> {
       _error = null;
     });
     try {
-      final ws = await WebSocket.connect('ws://$target');
+      final ws = WebSocketChannel.connect(Uri.parse('ws://$target'));
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString(_lastIpKey, target);
       await prefs.setString(_lastNameKey, name);
@@ -98,7 +97,7 @@ class _ClientPageState extends State<ClientPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Connected')),
       );
-      ws.listen(
+      ws.stream.listen(
         (event) {
           if (!mounted) return;
           setState(() {
@@ -142,7 +141,7 @@ class _ClientPageState extends State<ClientPage> {
           _handleDisconnect(error: 'Disconnected');
         },
       );
-      ws.add(jsonEncode({
+      ws.sink.add(jsonEncode({
         'type': 'command',
         'action': 'introduce',
         'name': name,
@@ -165,7 +164,7 @@ class _ClientPageState extends State<ClientPage> {
 
   void _handleDisconnect({String? error}) {
     if (!mounted) return;
-    _socket?.close();
+    _socket?.sink.close();
     _socket = null;
     _remoteState = null;
     _lockedToAssigned = false;
@@ -199,9 +198,7 @@ class _ClientPageState extends State<ClientPage> {
   }
 
   Future<void> _scanQr() async {
-    final result = await Navigator.of(context).push<String>(
-      MaterialPageRoute(builder: (_) => const _QrScanPage()),
-    );
+    final result = await scanQr(context);
     if (!mounted || result == null) return;
     final parsed = _parseHost(result);
     if (parsed == null) {
@@ -354,7 +351,7 @@ class _ClientPageState extends State<ClientPage> {
 
   void _sendCommand(String action, Map<String, dynamic> payload) {
     if (_socket == null) return;
-    _socket!.add(jsonEncode({
+    _socket!.sink.add(jsonEncode({
       'type': 'command',
       'action': action,
       ...payload,
@@ -387,33 +384,3 @@ class _FullScreenPlayer extends StatelessWidget {
 }
 
 
-class _QrScanPage extends StatefulWidget {
-  const _QrScanPage();
-
-  @override
-  State<_QrScanPage> createState() => _QrScanPageState();
-}
-
-class _QrScanPageState extends State<_QrScanPage> {
-  bool _found = false;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Scan QR'),
-      ),
-      body: MobileScanner(
-        onDetect: (capture) {
-          if (_found) return;
-          final barcodes = capture.barcodes;
-          if (barcodes.isEmpty) return;
-          final value = barcodes.first.rawValue;
-          if (value == null || value.trim().isEmpty) return;
-          _found = true;
-          Navigator.of(context).pop(value);
-        },
-      ),
-    );
-  }
-}
