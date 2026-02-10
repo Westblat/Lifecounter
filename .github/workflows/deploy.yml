@@ -22,3 +22,4 @@ jobs:
           ssh_key: ${{ secrets.SSH_PRIVATE_KEY }}
           ghcr_user: ${{ secrets.GHCR_USER }}
           ghcr_token: ${{ secrets.GHCR_TOKEN }}
+          image_name: web
