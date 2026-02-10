@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copy pubspec first to leverage layer caching
 COPY pubspec.yaml pubspec.lock ./
-RUN flutter pub get
+RUN flutter pub get && flutter precache --web
 
 # Copy the rest of the app
 COPY . .
