@@ -1,0 +1,6 @@
+services:
+  web:
+    image: ghcr.io/${GITHUB_REPOSITORY:-owner/repo}/web:${IMAGE_TAG:-latest}
+    ports:
+      - "8080:8001"
+    restart: unless-stopped
